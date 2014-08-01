@@ -1,0 +1,32 @@
+# CryptoCoinWatch - Ethereum datafeed to watch the amount received of crypto currencies
+
+shared:
+    OWNER = 0x10
+    SOURCE = 0x11
+    MIN_CONFIRMATIONS = 0x12
+    LAST_UPDATED = 0x13
+    WATCH_LIST = 0x20
+
+init:
+    contract.storage[OWNER] = msg.sender
+    contract.storage[SOURCE] = "blockchain.info"
+    contract.storage[MIN_CONFIRMATIONS] = 6
+
+code:
+    if msg.data[0] == "suicide" and msg.sender == contract.storage[OWNER]:
+        suicide(msg.sender)
+
+    elif msg.data[0] == "watch":
+        # TODO ensure address isn't already watched
+        nr_contracts = contract.storage[WATCH_LIST]
+        contract.storage[WATCH_LIST + nr_contracts] = msg.data[1]
+        contract.storage[WATCH_LIST] += 1
+        return(1)
+
+    elif msg.data[0] == "getreceivedbyaddress":
+        return(contract.storage[msg.data[1]])
+
+    elif msg.data[0] == "setreceivedbyaddress" and msg.sender == contract.storage[OWNER]:
+        contract.storage[msg.data[1]] = msg.data[2]
+        contract.storage[LAST_UPDATED] = block.timestamp
+        return(1)
