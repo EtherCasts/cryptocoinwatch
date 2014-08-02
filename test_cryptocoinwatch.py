@@ -3,15 +3,11 @@ from pyethereum import tester
 import logging
 from pprint import pprint
 
-def hex_pad(x):
-    return "{0:#0{1}x}".format(x, 66)
-
-def xhex(x):
-    return "{0:#x}".format(x)
+from utils import address_to_hex, hex_pad, xhex
 
 
 class TestCryptoCoinWatch(object):
-    ADDRESS = 0x3399bc19f2b20473d417e31472c92947b59f95f8  # base58check_to_hex 36PrZ1KHYMpqSyAQXSG8VwbUiq2EogxLo2
+    ADDRESS = int(address_to_hex("36PrZ1KHYMpqSyAQXSG8VwbUiq2EogxLo2"), 16)
     ADDRESS_OFFSET = 2 ** 160
     ADDRESS_RECORD_SIZE = 4
 

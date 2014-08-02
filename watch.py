@@ -3,6 +3,8 @@
 import requests
 import sys
 
+from utils import address_to_hex
+
 DEFAULT_ADDRESS = "36PrZ1KHYMpqSyAQXSG8VwbUiq2EogxLo2"
 
 def getreceivedbyaddress(address, confirmations=6):
@@ -13,8 +15,9 @@ def getreceivedbyaddress(address, confirmations=6):
     print "ERROR", r.status_code, r.text
 
 def watch(address):
+    hex_value = address_to_hex(address)
     value = getreceivedbyaddress(address)
-    print address, value
+    print address, hex_value, value
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
