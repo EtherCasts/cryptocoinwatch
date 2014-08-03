@@ -9,6 +9,11 @@ def xhex(x):
         value = "0x0" + value[2:]
     return value
 
+def xint(x):
+    if x == '0x':
+        return 0
+    return int(x, 16)
+
 def address_to_hex(address):
     version = get_version_byte(address)
     print version
@@ -16,11 +21,16 @@ def address_to_hex(address):
     return "0x%02x%s" % (version, hex_value)
 
 def hex_to_address(value):
-    if len(value) != 44:
+    if len(value) == 42:
+        version = 0
+        value = value[2:]
+    elif len(value) == 44:
+        version = int(value[:4], 16)
+        value = value[4:]
+    else:
         raise ValueError("Invalid length")
 
-    version = int(value[:4], 16)
-    return hex_to_b58check(value[4:], magicbyte=version)
+    return hex_to_b58check(value, magicbyte=version)
 
 # TESTS
 
