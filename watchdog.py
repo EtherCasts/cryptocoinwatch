@@ -50,6 +50,11 @@ def cmd_create(args):
     if args.wait:
         args.api.wait_for_next_block(verbose=True)
 
+def cmd_getreceivedbyaddress(args):
+    hex_value = address_to_hex(args.address)
+    record = get_address_record(args.api, args.contract_address, xint(hex_value))
+    pprint(record)
+
 def cmd_status(args):
     print "Coinbase: %s" % args.api.coinbase()
     print "Listening? %s" % args.api.is_listening()
@@ -125,6 +130,11 @@ def main():
     parser_create = subparsers.add_parser('create', help='create the contract')
     parser_create.set_defaults(func=cmd_create)
     parser_create.add_argument('--wait', action='store_true', help='wait for block to be mined')
+
+    parser_getreceivedbyaddress = subparsers.add_parser('getreceivedbyaddress', help='getreceivedbyaddress')
+    parser_getreceivedbyaddress.set_defaults(func=cmd_getreceivedbyaddress)
+    parser_getreceivedbyaddress.add_argument('contract_address', help='contract address')
+    parser_getreceivedbyaddress.add_argument('address', help='cryptocurrency address')
 
     parser_poll = subparsers.add_parser('poll', help='poll the contract state')
     parser_poll.set_defaults(func=cmd_poll)
