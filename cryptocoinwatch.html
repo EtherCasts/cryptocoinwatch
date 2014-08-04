@@ -14,6 +14,7 @@ if (typeof(window.jQuery) === "undefined") {
 }
 if (typeof(window.bigInt) === "undefined") {
     document.write('<script src="js/eth/BigInteger.js"><\/script>');
+    document.write('<script src="js/eth/ethString.js"><\/script>');
 }
 </script>
 <script type="text/javascript" src="js/coinstring.min.js"></script>
@@ -44,5 +45,6 @@ if (typeof(window.bigInt) === "undefined") {
     <label for="address">Which cryptocurrency address do you want to watch? </label>
     <input id="address" type="text" value=""/><br />
     <button id="btn-watch">WATCH</button>
+    <div id="log"></div>
 </body>
 </html>

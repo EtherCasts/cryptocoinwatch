@@ -100,8 +100,12 @@
             window.eth.stateAt = window.eth.storageAt;
         }
 
-        CryptoCoinWatch.showStatistics();
-        CryptoCoinWatch.showWatchList();
+        //try {
+            CryptoCoinWatch.showStatistics();
+            CryptoCoinWatch.showWatchList();
+        //} catch(e) {
+        //    $('#log').append(String(e) + "<br />");
+        //}
 
         $("#btn-watch").click(function() {
             console.log("click");
