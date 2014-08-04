@@ -16,7 +16,6 @@ def xint(x):
 
 def address_to_hex(address):
     version = get_version_byte(address)
-    print version
     hex_value = b58check_to_hex(address)
     return "0x%02x%s" % (version, hex_value)
 
