@@ -1,0 +1,45 @@
+<html>
+<head>
+<title>CryptoCoinWatch</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+if (typeof(window.eth) === "undefined") {
+    document.write('<script src="js/eth/eth.js"><\/script>');
+    ethBrowser = false;
+} else {
+    ethBrowser = true;
+}
+if (typeof(window.jQuery) === "undefined") {
+    document.write('<script src="js/jquery.min.js"><\/script>');
+}
+</script>
+<script type="text/javascript" src="js/coinstring.min.js"></script>
+<script type="text/javascript" src="js/moment.min.js"></script>
+<script type="text/javascript" src="js/scripts.js"></script>
+</head>
+<body>
+    <h1>CryptoCoinWatch</h1>
+    Using contract <span id="contractAddr"></span>.
+
+    <h3>Statistics</h3>
+    <ul>
+        <li>Owner: <span id="owner"></span>
+        <li>Source: <span id="source"></span>
+        <li>Min. Confirmations: <span id="min-confirmations"></span>
+        <li>Last Updated: <span id="last-updated"></span>
+        <li>Watch List: <span id="watch-list"></span>
+    </ul>
+
+    <table id="watch-table">
+        <tr>
+            <th>Address</th><th>getreceivedbyaddress</th><th>last updated</th><th># watchers</th><th>last watched</th>
+        </tr>
+        <tbody />
+    </table>
+
+    <h2>Watch An Address</h2>
+    <label for="address">Which cryptocurrency address do you want to watch? </label>
+    <input id="address" type="text" value=""/><br />
+    <button id="btn-watch">WATCH</button>
+</body>
+</html>
