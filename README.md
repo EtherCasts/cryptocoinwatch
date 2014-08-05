@@ -82,3 +82,7 @@ optional arguments:
 ```
 
 The watchdog will connect to the `eth` JSONRPC interface, `http://127.0.0.1:8080` by default, but this can be customised by setting the environment variable `ETH_JSONRPC_URI`.
+
+# License
+
+Modified MIT License - (c) 2014 - EtherCasts. See [License](LICENSE.md) file.
