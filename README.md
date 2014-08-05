@@ -54,3 +54,31 @@ Sets the `getreceivedbyaddress` value for the given address, can only be execute
 Usage: `0x73756963696465`
 
 Allows the contract owner (creator) to remove the contract from the blockchain.
+
+## Watchdog
+
+The `watchdog.py` service is the off-chain counterpart to the above contract. It lets you `create` a datafeed contract and `poll` its state, as well as offer some testing utilities (`getreceivedbyaddress`, `status`, `transact` and `watch`).
+
+The service can be executed from the command line:
+
+```
+usage: watchdog.py [-h]
+                   {create,getreceivedbyaddress,poll,status,transact,watch}
+                   ...
+
+positional arguments:
+  {create,getreceivedbyaddress,poll,status,transact,watch}
+                        sub-command help
+    create              create the contract
+    getreceivedbyaddress
+                        getreceivedbyaddress
+    poll                poll the contract state
+    status              display the eth node status
+    transact            transact ether to destination
+    watch               watch the address
+
+optional arguments:
+  -h, --help            show this help message and exit
+```
+
+The watchdog will connect to the `eth` JSONRPC interface, `http://127.0.0.1:8080` by default, but this can be customised by setting the environment variable `ETH_JSONRPC_URI`.
