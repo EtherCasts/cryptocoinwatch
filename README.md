@@ -13,7 +13,7 @@ Open the DApp in your Ethereum client (AlethZero POC6): http://ethercasts.github
 
 ## Contract
 
-The contract `cryptocoinwatch.se` allows 3rd parties to request the datafeed to watch the `getreceivedbyaddress` value of a Bitcoin (or other altcoin) address.
+The contract [cryptocoinwatch.se](examples/cryptocoinwatch.se`) allows 3rd parties to request the datafeed to watch the `getreceivedbyaddress` value of a Bitcoin (or other altcoin) address.
 
 When providing an address, it should be converted to the [Base58Check](https://en.bitcoin.it/wiki/Base58Check_encoding) format and prefixed with the version byte. So for the Bitcoin multisig address `36PrZ1KHYMpqSyAQXSG8VwbUiq2EogxLo2` the address to use is `0x053399bc19f2b20473d417e31472c92947b59f95f8`
 

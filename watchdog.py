@@ -12,7 +12,7 @@ from serpent import compile
 import api
 from utils import address_to_hex, hex_to_address, xhex, xint
 
-CONTRACT_FILE = "cryptocoinwatch.se"
+CONTRACT_FILE = "contracts/cryptocoinwatch.se"
 ETH_JSONRPC_URI = os.getenv("ETH_JSONRPC_URI", "http://127.0.0.1:8080")
 
 ADDRESS_OFFSET = 2 ** 160
