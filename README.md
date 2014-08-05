@@ -3,6 +3,14 @@ CryptoCoinWatch
 
 Ethereum datafeed to watch the amount received of crypto currencies. This data can be subsequently used by CFDs, escrows, betting contracts, etc.
 
+![CryptoCoinWatch DApp](https://i.imgur.com/s3FnhWv.png)
+
+## DApp
+
+The CryptoCoinWatch DApp lets you inspect a datafeed and allows you to watch a new address. See above screenshot for an impression. This is for development and testing purposes only, as normally contracts will directly communicate with the contract itself.
+
+Open the DApp in your Ethereum client (AlethZero POC6): http://ethercasts.github.io/cryptocoinwatch/cryptocoinwatch.html
+
 ## Contract
 
 The contract `cryptocoinwatch.se` allows 3rd parties to request the datafeed to watch the `getreceivedbyaddress` value of a Bitcoin (or other altcoin) address.
