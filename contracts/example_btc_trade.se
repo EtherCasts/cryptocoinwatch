@@ -52,7 +52,7 @@ code:
         args[0] = "watch"
         args[1] = msg.data[3]
 
-        values = msg(tx.gas - 25, contract.storage[msg.data[2]], 0, args, 2)
+        values = msg(tx.gas - 25, msg.data[2], 0, args, 2)
         if values > 0:
             # initialize contract
             contract.storage[SELLER] = msg.data[1]
@@ -76,12 +76,12 @@ code:
             # check with datafeed
             args = array(2)
             args[0] = "getreceivedbyaddress"
-            args[1] = msg.data[contract.storage[BTC_ADDRESS]]
+            args[1] = contract.storage[BTC_ADDRESS]
 
             values = call(contract.storage[DATAFEED], args, 2, 2)
             if values[0] >= contract.storage[BTC_AMOUNT]:
                 # completed, pay seller
-                send(contract.storage[SELLER], balance)
+                send(contract.storage[SELLER], contract.balance)
                 contract.storage[STATE] = S_FINISHED
                 return(S_FINISHED)
             else:
