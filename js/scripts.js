@@ -91,7 +91,10 @@
             CryptoCoinWatch.contractAddress,
             CryptoCoinWatch.cmdWatch.pad(32) + hex.pad(32),
             "10000",
-            eth.gasPrice
+            eth.gasPrice,
+            function() {
+                alert("Address " + address +" is now watched");
+            }
         );
     };
 
