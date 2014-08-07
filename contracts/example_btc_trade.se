@@ -1,4 +1,4 @@
-# BTC/ETH escrowed trade contract using CryptoCoinWatch datafeed
+# ETH/BTC escrowed trade contract using CryptoCoinWatch datafeed
 #
 # buyer - person buying the BTC, selling ETH
 # seller - person selling the BTC, buying ETH
@@ -29,41 +29,63 @@ shared:
 
     STATE = 0x30
 
-# state 0 = new
-# state 1 = ready
-# state 2 = finished
-# state 3 = expired
+    S_NEW = 1
+    S_PENDING = 2
+    S_FINISHED = 3
+    S_EXPIRED = 4
 
 init:
     contract.storage[BUYER] = msg.sender
-    contract.storage[STATE] = 0
+    contract.storage[STATE] = S_NEW
 
 code:
     cmd = msg.data[0]
     state = contract.storage[STATE]
 
-    if state == 0 and cmd == "new" and msg.sender == contract.storage[BUYER]:
-        # initialize contract
-        contract.storage[SELLER] = msg.data[1]
-        contract.storage[DATAFEED] = msg.data[2]
+    if state == S_NEW and cmd == "new" and msg.sender == contract.storage[BUYER]:
+        if msg.data[1] == 0 or msg.data[2] == 0 or msg.data[3] == 0 or msg.data[4] == 0 or msg.data[5] == 0 or msg.value == 0:
+            # invalid arguments
+            return(0)
 
-        contract.storage[BTC_ADDRESS] = msg.data[3]
-        contract.storage[BTC_AMOUNT] = msg.data[4]
-        contract.storage[EXPIRY] = msg.data[5]
+        # requests datafeed to watch btc_address
+        args = array(2)
+        args[0] = "watch"
+        args[1] = msg.data[3]
 
-        contract.storage[STATE] = 1
+        values = msg(tx.gas - 25, contract.storage[msg.data[2]], 0, args, 2)
+        if values > 0:
+            # initialize contract
+            contract.storage[SELLER] = msg.data[1]
+            contract.storage[DATAFEED] = msg.data[2]
 
-# TODO contract escrows eth_amount (callvalue)
-# TODO contract requests datafeed to watch btc_address
+            contract.storage[BTC_ADDRESS] = msg.data[3]
+            contract.storage[BTC_AMOUNT] = msg.data[4]
+            contract.storage[EXPIRY] = msg.data[5]
 
-        return(1)
+            contract.storage[STATE] = S_PENDING
+            return(S_PENDING)
 
-    elif state == 1 and cmd == "finish" and msg.sender == contract.storage[BUYER] or msg.sender == contract.storage[SELLER]:
+    elif state == S_PENDING and cmd == "finish" and msg.sender == contract.storage[BUYER] or msg.sender == contract.storage[SELLER]:
+        if contract.storage[EXPIRY] < block.timestamp:
+            # expired, refund buyer
+            send(contract.storage[BUYER], contract.balance)
+            contract.storage[STATE] = S_EXPIRED
+            return(S_EXPIRED)
 
-# TODO contract checks with datafeed:
-# - amount received, send escrowed ETH to seller
-# - amount not received, after expiry; sends escrowed ETH back to buyer
-# - amount not received, but not expiry yet; nothing happens
-#
-    else:
-        return(0)
+        else:
+            # check with datafeed
+            args = array(2)
+            args[0] = "getreceivedbyaddress"
+            args[1] = msg.data[contract.storage[BTC_ADDRESS]]
+
+            values = call(contract.storage[DATAFEED], args, 2, 2)
+            if values[0] >= contract.storage[BTC_AMOUNT]:
+                # completed, pay seller
+                send(contract.storage[SELLER], balance)
+                contract.storage[STATE] = S_FINISHED
+                return(S_FINISHED)
+            else:
+                # still pending
+                return(S_PENDING)
+
+    return(0)

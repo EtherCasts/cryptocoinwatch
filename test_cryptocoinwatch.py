@@ -14,7 +14,7 @@ class TestCryptoCoinWatch(object):
     @classmethod
     def setup_class(cls):
         logging.disable(logging.INFO)  # disable DEBUG logging of pyethereum.processblock
-        cls.code = open('cryptocoinwatch.se').read()
+        cls.code = open('contracts/cryptocoinwatch.se').read()
 
     def setup_method(self, method):
         self.s = tester.state()
