@@ -13,10 +13,10 @@
 # 3) watchdog will notice total bitcoins received and updates value
 # 4) buyer/seller triggers contract to finish
 # buyer/seller => "finish"
+# after expiry; sends escrowed ETH back to buyer
 # contract checks with datafeed:
 # - amount received, send escrowed ETH to seller
-# - amount not received, after expiry; sends escrowed ETH back to buyer
-# - amount not received, but not expiry yet; nothing happens
+# - amount not received; nothing happens
 
 shared:
     BUYER = 0x10
