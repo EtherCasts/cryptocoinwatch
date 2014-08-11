@@ -143,7 +143,7 @@ def main():
     parser_status = subparsers.add_parser('status', help='display the eth node status')
     parser_status.set_defaults(func=cmd_status)
 
-    parser_transact = subparsers.add_parser('transact', help='transact ether to destination')
+    parser_transact = subparsers.add_parser('transact', help='transact ether to destination (default: 1 ETH)')
     parser_transact.set_defaults(func=cmd_transact)
     parser_transact.add_argument('dest', help='destination')
     parser_transact.add_argument('--value', type=int, default=1, help='value to transfer in ether')
