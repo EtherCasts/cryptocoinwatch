@@ -2,7 +2,7 @@ from pyethereum import tester
 
 import logging
 
-from utils import address_to_hex, hex_pad, xhex
+from cryptocoinwatch.utils import address_to_hex, hex_pad, xhex
 
 # from pyethereum import processblock
 # processblock.enable_debug()

@@ -3,7 +3,7 @@ from pyethereum import tester
 import logging
 from pprint import pprint
 
-from utils import address_to_hex, hex_pad, xhex
+from cryptocoinwatch.utils import address_to_hex, hex_pad, xhex
 
 
 class TestCryptoCoinWatch(object):
