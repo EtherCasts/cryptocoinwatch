@@ -3,7 +3,7 @@
 var StatisticsBox = React.createClass({displayName: 'StatisticsBox',
     render: function() {
         return (
-            React.DOM.div({id: "statistics-box"}, 
+            React.DOM.div({className: "statisticsBox"}, 
                 React.DOM.h3(null, "Statistics"), 
                 React.DOM.ul(null, 
                     React.DOM.li(null, "Contract ", this.props.contract), 
@@ -40,7 +40,7 @@ var WatchList = React.createClass({displayName: 'WatchList',
             );
         });
         return (
-            React.DOM.table({id: "watch-table", className: "table"}, 
+            React.DOM.table({className: "watchList table"}, 
                 React.DOM.thead(null, 
                     React.DOM.tr(null, 
                         React.DOM.th(null, "Address"), 
@@ -61,7 +61,7 @@ var WatchList = React.createClass({displayName: 'WatchList',
 var WatchForm = React.createClass({displayName: 'WatchForm',
     render: function() {
         return (
-            React.DOM.div({id: "watch-form"}, 
+            React.DOM.div({className: "watchForm"}, 
                 React.DOM.h2(null, "Watch An Address"), 
                 React.DOM.label({for: "address"}, "Which cryptocurrency address do you want to watch?"), 
                 React.DOM.input({id: "address", type: "text"}), React.DOM.br(null), 
@@ -91,7 +91,7 @@ var CryptoCoinWatchBox = React.createClass({displayName: 'CryptoCoinWatchBox',
     },
     render: function() {
         return (
-            React.DOM.div({className: "spacer"}, 
+            React.DOM.div({className: "cryptoCoinWatchBox"}, 
                 StatisticsBox({contract: this.props.contract, statistics: this.state.statistics, watchList: this.state.watchList}), 
                 WatchList({watchList: this.state.watchList}), 
                 WatchForm(null)

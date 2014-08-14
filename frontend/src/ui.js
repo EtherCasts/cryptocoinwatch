@@ -3,7 +3,7 @@
 var StatisticsBox = React.createClass({
     render: function() {
         return (
-            <div id="statistics-box">
+            <div className="statisticsBox">
                 <h3>Statistics</h3>
                 <ul>
                     <li>Contract {this.props.contract}</li>
@@ -40,7 +40,7 @@ var WatchList = React.createClass({
             );
         });
         return (
-            <table id="watch-table" className="table">
+            <table className="watchList table">
                 <thead>
                     <tr>
                         <th>Address</th>
@@ -61,7 +61,7 @@ var WatchList = React.createClass({
 var WatchForm = React.createClass({
     render: function() {
         return (
-            <div id="watch-form">
+            <div className="watchForm">
                 <h2>Watch An Address</h2>
                 <label for="address">Which cryptocurrency address do you want to watch?</label>
                 <input id="address" type="text" /><br />
@@ -91,7 +91,7 @@ var CryptoCoinWatchBox = React.createClass({
     },
     render: function() {
         return (
-            <div className="spacer">
+            <div className="cryptoCoinWatchBox">
                 <StatisticsBox contract={this.props.contract} statistics={this.state.statistics} watchList={this.state.watchList} />
                 <WatchList watchList={this.state.watchList} />
                 <WatchForm />
