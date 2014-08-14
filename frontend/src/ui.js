@@ -11,7 +11,7 @@ var StatisticsBox = React.createClass({
                     <li>Source: {this.props.statistics.source}</li>
                     <li>Min. Confirmations: {this.props.statistics.minConfirmations}</li>
                     <li>Last Updated: {CryptoCoinWatch.epochFromNow(this.props.statistics.lastUpdated)}</li>
-                    <li>Watch List: {this.props.statistics.watchList}</li>
+                    <li>Watch list length: {this.props.watchList.length}</li>
                 </ul>
             </div>
         );
@@ -23,18 +23,18 @@ var AddressRow = React.createClass({
         return (
             <tr>
                 <td>{this.props.address.btcAddress}</td>
-                <td>{this.props.address.getreceivedbyaddress}</td>
+                <td>{this.props.address.receivedByAddress}</td>
                 <td>{CryptoCoinWatch.epochFromNow(this.props.address.lastUpdated)}</td>
-                <td>{this.props.address.nrWatchers}</td>
+                <td>{this.props.address.nrWatched}</td>
                 <td>{CryptoCoinWatch.epochFromNow(this.props.address.lastWatched)}</td>
             </tr>
         );
     }
 });
 
-var AddressTable = React.createClass({
+var WatchListTable = React.createClass({
     render: function() {
-        var addressNodes = this.props.addresses.map(function (address) {
+        var watchListNodes = this.props.watchList.map(function (address) {
             return (
                 <AddressRow address={address} />
             );
@@ -51,7 +51,7 @@ var AddressTable = React.createClass({
                     </tr>
                 </thead>
                 <tbody>
-                    {addressNodes}
+                    {watchListNodes}
                 </tbody>
             </table>
         );
@@ -64,7 +64,7 @@ var WatchForm = React.createClass({
             <div id="watch-form">
                 <h2>Watch An Address</h2>
                 <label for="address">Which cryptocurrency address do you want to watch?</label>
-                <input id="address" type="text" value=""/><br />
+                <input id="address" type="text" /><br />
                 <button id="btn-watch">WATCH</button>
             </div>
         );
@@ -73,54 +73,32 @@ var WatchForm = React.createClass({
 
 var CryptoCoinWatchBox = React.createClass({
     getInitialState: function() {
-        return {statistics: {}};
+        return {statistics: {}, watchList: []};
     },
     loadStatistics: function() {
         var statistics = CryptoCoinWatch.getStatistics(this.props.contract);
-        console.log("statistics", statistics);
         this.setState({statistics: statistics});
+    },
+    loadWatchList: function() {
+        var watchList = CryptoCoinWatch.getWatchList(this.props.contract);
+        this.setState({watchList: watchList});
     },
     componentDidMount: function() {
         this.loadStatistics();
+        this.loadWatchList();
         setInterval(this.loadStatistics, this.props.pollInterval);
+        setInterval(this.loadWatchList, this.props.pollInterval);
     },
     render: function() {
         return (
             <div className="spacer">
-                <StatisticsBox contract={this.props.contract} statistics={this.state.statistics} />
-                <AddressTable addresses={this.props.addresses} />
+                <StatisticsBox contract={this.props.contract} statistics={this.state.statistics} watchList={this.state.watchList} />
+                <WatchListTable watchList={this.state.watchList} />
                 <WatchForm />
             </div>
         );
     }
 });
 
-var statistics = {
-    owner: '0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826',
-    source: 'blockchain.info',
-    minConfirmations: 6,
-    lastUpdated: 1408010619,
-    watchList: 3
-};
-
-var addresses = [{
-    btcAddress: '36PrZ1KHYMpqSyAQXSG8VwbUiq2EogxLo2',
-    getreceivedbyaddress: 2406330081938,
-    lastUpdated: 1408010619,
-    nrWatchers: 2,
-    lastWatched: 1407405790
-}, {
-    btcAddress: '1EXoDusjGwvnjZUyKkxZ4UHEf77z6A5S4P',
-    getreceivedbyaddress: 512129645662,
-    lastUpdated: 1408010619,
-    nrWatchers: 1,
-    lastWatched: 1407405790
-}, {
-    btcAddress: '1CounterpartyXXXXXXXXXXXXXXXUWLpVr',
-    getreceivedbyaddress: 213083765357,
-    lastUpdated: 0,
-    nrWatchers: 0,
-    lastWatched: 1407405790
-}];
-
-React.renderComponent(<CryptoCoinWatchBox contract={CryptoCoinWatch.contractAddress } pollInterval={5000} addresses={addresses} />, document.getElementById('container'));
+React.renderComponent(<CryptoCoinWatchBox contract={CryptoCoinWatch.contractAddress} pollInterval={5000} />,
+        document.getElementById('container'));

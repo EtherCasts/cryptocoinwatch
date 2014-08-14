@@ -17,9 +17,9 @@
         return {
             owner: eth.stateAt(contract, "0x10"),
             source: eth.stateAt(contract, "0x11").bin(),
-            minConfirmations: eth.stateAt(contract, "0x12").dec(),
-            lastUpdated: eth.stateAt(contract, "0x13").dec(),
-            watchList: eth.stateAt(contract, "0x20").dec()
+            minConfirmations: parseInt(eth.stateAt(contract, "0x12").dec()),
+            lastUpdated: parseInt(eth.stateAt(contract, "0x13").dec()),
+            watchListLength: parseInt(eth.stateAt(contract, "0x20").dec())
         };
     };
 
@@ -45,26 +45,31 @@
         }
     };
 
-    CryptoCoinWatch.showWatchList = function() {
-        var watchList = eth.stateAt(CryptoCoinWatch.contractAddress, "0x20").dec();
-        $("#watch-list").text(watchList);
+    CryptoCoinWatch.getWatchList = function(contract) {
+        var result = [];
+        var watchListLength = parseInt(eth.stateAt(contract, "0x20").dec());
 
-        for(var i = 0; i < watchList; i++) {
+        for(var i = 0; i < watchListLength; i++) {
             var watchLocation = bigInt("0x20").add(i).add(1).toString();
-            var addressHex = eth.stateAt(CryptoCoinWatch.contractAddress, watchLocation).hex();
-            var address = CryptoCoinWatch.hexToAddress(addressHex);
+            var addressHex = eth.stateAt(contract, watchLocation).hex();
+            var btcAddress = CryptoCoinWatch.hexToAddress(addressHex);
 
             var addressIdx = CryptoCoinWatch.addressRecordSize.multiply(addressHex).plus(CryptoCoinWatch.addressOffset);
 
-            var receivedByAddress = eth.stateAt(CryptoCoinWatch.contractAddress, addressIdx.toString()).dec();
-            var lastUpdated = eth.stateAt(CryptoCoinWatch.contractAddress, addressIdx.add(1).toString()).dec();
-            var nrWatched = eth.stateAt(CryptoCoinWatch.contractAddress, addressIdx.add(2).toString()).dec();
-            var lastWatched = eth.stateAt(CryptoCoinWatch.contractAddress, addressIdx.add(3).toString()).dec();
+            var receivedByAddress = parseInt(eth.stateAt(contract, addressIdx.toString()).dec());
+            var lastUpdated = parseInt(eth.stateAt(contract, addressIdx.add(1).toString()).dec());
+            var nrWatched = parseInt(eth.stateAt(contract, addressIdx.add(2).toString()).dec());
+            var lastWatched = parseInt(eth.stateAt(contract, addressIdx.add(3).toString()).dec());
 
-            $("#watch-table > tbody:last").append("<tr><td>" + address + "</td><td>" + receivedByAddress + "</td><td>" +
-                    CryptoCoinWatch.epochFromNow(lastUpdated) + "</td><td>" + nrWatched + "</td><td>" +
-                    CryptoCoinWatch.epochFromNow(lastWatched) + "</td></tr>");
+            result.push({
+                btcAddress: btcAddress,
+                receivedByAddress: receivedByAddress,
+                lastUpdated: lastUpdated,
+                nrWatched: nrWatched,
+                lastWatched: lastWatched
+            });
         }
+        return result;
     };
 
     CryptoCoinWatch.addressToHex = function(address) {
@@ -96,13 +101,6 @@
     };
 
     $(document).ready(function() {
-        //try {
-            //CryptoCoinWatch.showStatistics();
-            //CryptoCoinWatch.showWatchList();
-        //} catch(e) {
-        //    $('#log').append(String(e) + "<br />");
-        //}
-
         $("#btn-watch").click(function() {
             console.log("click");
             CryptoCoinWatch.watchAddress();

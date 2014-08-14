@@ -11,7 +11,7 @@ var StatisticsBox = React.createClass({displayName: 'StatisticsBox',
                     React.DOM.li(null, "Source: ", this.props.statistics.source), 
                     React.DOM.li(null, "Min. Confirmations: ", this.props.statistics.minConfirmations), 
                     React.DOM.li(null, "Last Updated: ", CryptoCoinWatch.epochFromNow(this.props.statistics.lastUpdated)), 
-                    React.DOM.li(null, "Watch List: ", this.props.statistics.watchList)
+                    React.DOM.li(null, "Watch list length: ", this.props.watchList.length)
                 )
             )
         );
@@ -23,18 +23,18 @@ var AddressRow = React.createClass({displayName: 'AddressRow',
         return (
             React.DOM.tr(null, 
                 React.DOM.td(null, this.props.address.btcAddress), 
-                React.DOM.td(null, this.props.address.getreceivedbyaddress), 
+                React.DOM.td(null, this.props.address.receivedByAddress), 
                 React.DOM.td(null, CryptoCoinWatch.epochFromNow(this.props.address.lastUpdated)), 
-                React.DOM.td(null, this.props.address.nrWatchers), 
+                React.DOM.td(null, this.props.address.nrWatched), 
                 React.DOM.td(null, CryptoCoinWatch.epochFromNow(this.props.address.lastWatched))
             )
         );
     }
 });
 
-var AddressTable = React.createClass({displayName: 'AddressTable',
+var WatchListTable = React.createClass({displayName: 'WatchListTable',
     render: function() {
-        var addressNodes = this.props.addresses.map(function (address) {
+        var watchListNodes = this.props.watchList.map(function (address) {
             return (
                 AddressRow({address: address})
             );
@@ -51,7 +51,7 @@ var AddressTable = React.createClass({displayName: 'AddressTable',
                     )
                 ), 
                 React.DOM.tbody(null, 
-                    addressNodes
+                    watchListNodes
                 )
             )
         );
@@ -64,7 +64,7 @@ var WatchForm = React.createClass({displayName: 'WatchForm',
             React.DOM.div({id: "watch-form"}, 
                 React.DOM.h2(null, "Watch An Address"), 
                 React.DOM.label({for: "address"}, "Which cryptocurrency address do you want to watch?"), 
-                React.DOM.input({id: "address", type: "text", value: ""}), React.DOM.br(null), 
+                React.DOM.input({id: "address", type: "text"}), React.DOM.br(null), 
                 React.DOM.button({id: "btn-watch"}, "WATCH")
             )
         );
@@ -73,54 +73,32 @@ var WatchForm = React.createClass({displayName: 'WatchForm',
 
 var CryptoCoinWatchBox = React.createClass({displayName: 'CryptoCoinWatchBox',
     getInitialState: function() {
-        return {statistics: {}};
+        return {statistics: {}, watchList: []};
     },
     loadStatistics: function() {
         var statistics = CryptoCoinWatch.getStatistics(this.props.contract);
-        console.log("statistics", statistics);
         this.setState({statistics: statistics});
+    },
+    loadWatchList: function() {
+        var watchList = CryptoCoinWatch.getWatchList(this.props.contract);
+        this.setState({watchList: watchList});
     },
     componentDidMount: function() {
         this.loadStatistics();
+        this.loadWatchList();
         setInterval(this.loadStatistics, this.props.pollInterval);
+        setInterval(this.loadWatchList, this.props.pollInterval);
     },
     render: function() {
         return (
             React.DOM.div({className: "spacer"}, 
-                StatisticsBox({contract: this.props.contract, statistics: this.state.statistics}), 
-                AddressTable({addresses: this.props.addresses}), 
+                StatisticsBox({contract: this.props.contract, statistics: this.state.statistics, watchList: this.state.watchList}), 
+                WatchListTable({watchList: this.state.watchList}), 
                 WatchForm(null)
             )
         );
     }
 });
 
-var statistics = {
-    owner: '0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826',
-    source: 'blockchain.info',
-    minConfirmations: 6,
-    lastUpdated: 1408010619,
-    watchList: 3
-};
-
-var addresses = [{
-    btcAddress: '36PrZ1KHYMpqSyAQXSG8VwbUiq2EogxLo2',
-    getreceivedbyaddress: 2406330081938,
-    lastUpdated: 1408010619,
-    nrWatchers: 2,
-    lastWatched: 1407405790
-}, {
-    btcAddress: '1EXoDusjGwvnjZUyKkxZ4UHEf77z6A5S4P',
-    getreceivedbyaddress: 512129645662,
-    lastUpdated: 1408010619,
-    nrWatchers: 1,
-    lastWatched: 1407405790
-}, {
-    btcAddress: '1CounterpartyXXXXXXXXXXXXXXXUWLpVr',
-    getreceivedbyaddress: 213083765357,
-    lastUpdated: 0,
-    nrWatchers: 0,
-    lastWatched: 1407405790
-}];
-
-React.renderComponent(CryptoCoinWatchBox({contract: CryptoCoinWatch.contractAddress, pollInterval: 5000, addresses: addresses}), document.getElementById('container'));
+React.renderComponent(CryptoCoinWatchBox({contract: CryptoCoinWatch.contractAddress, pollInterval: 5000}),
+        document.getElementById('container'));
