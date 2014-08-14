@@ -6,11 +6,11 @@ var StatisticsBox = React.createClass({
             <div id="statistics-box">
                 <h3>Statistics</h3>
                 <ul>
-                    <li>Contract {this.props.statistics.contract}</li>
+                    <li>Contract {this.props.contract}</li>
                     <li>Owner: {this.props.statistics.owner}</li>
                     <li>Source: {this.props.statistics.source}</li>
                     <li>Min. Confirmations: {this.props.statistics.minConfirmations}</li>
-                    <li>Last Updated: {moment.unix(this.props.statistics.lastUpdated).fromNow()}</li>
+                    <li>Last Updated: {CryptoCoinWatch.epochFromNow(this.props.statistics.lastUpdated)}</li>
                     <li>Watch List: {this.props.statistics.watchList}</li>
                 </ul>
             </div>
@@ -24,9 +24,9 @@ var AddressRow = React.createClass({
             <tr>
                 <td>{this.props.address.btcAddress}</td>
                 <td>{this.props.address.getreceivedbyaddress}</td>
-                <td>{moment.unix(this.props.address.lastUpdated).fromNow()}</td>
+                <td>{CryptoCoinWatch.epochFromNow(this.props.address.lastUpdated)}</td>
                 <td>{this.props.address.nrWatchers}</td>
-                <td>{moment.unix(this.props.address.lastWatched).fromNow()}</td>
+                <td>{CryptoCoinWatch.epochFromNow(this.props.address.lastWatched)}</td>
             </tr>
         );
     }
@@ -71,11 +71,23 @@ var WatchForm = React.createClass({
     }
 });
 
-var CryptoCoinWatchUI = React.createClass({
+var CryptoCoinWatchBox = React.createClass({
+    getInitialState: function() {
+        return {statistics: {}};
+    },
+    loadStatistics: function() {
+        var statistics = CryptoCoinWatch.getStatistics(this.props.contract);
+        console.log("statistics", statistics);
+        this.setState({statistics: statistics});
+    },
+    componentDidMount: function() {
+        this.loadStatistics();
+        setInterval(this.loadStatistics, this.props.pollInterval);
+    },
     render: function() {
         return (
             <div className="spacer">
-                <StatisticsBox statistics={this.props.statistics} />
+                <StatisticsBox contract={this.props.contract} statistics={this.state.statistics} />
                 <AddressTable addresses={this.props.addresses} />
                 <WatchForm />
             </div>
@@ -84,12 +96,11 @@ var CryptoCoinWatchUI = React.createClass({
 });
 
 var statistics = {
-    contract: '0xcd5805d60bbf9afe69a394c2bda10f6dae2c39af',
     owner: '0xcd2a3d9f938e13cd947ec05abc7fe734df8dd826',
     source: 'blockchain.info',
     minConfirmations: 6,
     lastUpdated: 1408010619,
-    watchList: 4
+    watchList: 3
 };
 
 var addresses = [{
@@ -107,9 +118,9 @@ var addresses = [{
 }, {
     btcAddress: '1CounterpartyXXXXXXXXXXXXXXXUWLpVr',
     getreceivedbyaddress: 213083765357,
-    lastUpdated: 1408010619,
+    lastUpdated: 0,
     nrWatchers: 0,
     lastWatched: 1407405790
 }];
 
-React.renderComponent(<CryptoCoinWatchUI statistics={statistics} addresses={addresses} />, document.getElementById('container'));
+React.renderComponent(<CryptoCoinWatchBox contract={CryptoCoinWatch.contractAddress } pollInterval={5000} addresses={addresses} />, document.getElementById('container'));

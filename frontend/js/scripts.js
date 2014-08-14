@@ -7,24 +7,23 @@
 
     CryptoCoinWatch.cmdWatch = "0x7761746368";
 
-    CryptoCoinWatch.contractAddress = "0xcd5805d60bbf9afe69a394c2bda10f6dae2c39af";
+    //CryptoCoinWatch.contractAddress = "0xcd5805d60bbf9afe69a394c2bda10f6dae2c39af";
+    CryptoCoinWatch.contractAddress = "0x83c5541a6c8d2dbad642f385d8d06ca9b6c731ee";
 
     CryptoCoinWatch.addressOffset = bigInt(2).pow(160);
     CryptoCoinWatch.addressRecordSize = bigInt(4);
 
-    CryptoCoinWatch.showStatistics = function() {
-        $("#contractAddr").text(CryptoCoinWatch.contractAddress);
-
-        $("#owner").text(eth.stateAt(CryptoCoinWatch.contractAddress, "0x10"));
-        $("#source").text(eth.stateAt(CryptoCoinWatch.contractAddress, "0x11").bin());
-        $("#min-confirmations").text(eth.stateAt(CryptoCoinWatch.contractAddress, "0x12").dec());
-        var lastUpdated = eth.stateAt(CryptoCoinWatch.contractAddress, "0x13").dec();
-        $("#last-updated").text(CryptoCoinWatch.epochFromNow(lastUpdated));
-
+    CryptoCoinWatch.getStatistics = function(contract) {
+        return {
+            owner: eth.stateAt(contract, "0x10"),
+            source: eth.stateAt(contract, "0x11").bin(),
+            minConfirmations: eth.stateAt(contract, "0x12").dec(),
+            lastUpdated: eth.stateAt(contract, "0x13").dec(),
+            watchList: eth.stateAt(contract, "0x20").dec()
+        };
     };
 
     CryptoCoinWatch.hexToAddress = function(hex) {
-        console.log(hex);
         var version;
         var hash;
         if (hex.length == 42) {
@@ -39,8 +38,7 @@
     };
 
     CryptoCoinWatch.epochFromNow = function(epoch) {
-        console.log(epoch);
-        if (epoch == 0) {
+        if (epoch == 0 || typeof epoch === 'undefined') {
             return "never";
         } else {
             return moment.unix(epoch).fromNow();
@@ -84,7 +82,6 @@
             alert("Invalid address:" + err);
             return;
         }
-        console.log(hex);
         eth.transact(
             eth.key,
             "0",
@@ -99,13 +96,9 @@
     };
 
     $(document).ready(function() {
-        if (!ethBrowser) {
-            window.eth.stateAt = window.eth.storageAt;
-        }
-
         //try {
-            CryptoCoinWatch.showStatistics();
-            CryptoCoinWatch.showWatchList();
+            //CryptoCoinWatch.showStatistics();
+            //CryptoCoinWatch.showWatchList();
         //} catch(e) {
         //    $('#log').append(String(e) + "<br />");
         //}

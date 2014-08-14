@@ -7,20 +7,21 @@
     <link href="bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet" type="text/css"></link>
     <script src="bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
     <script src="bower_components/react/react.min.js" type="text/javascript"></script>
-
     <script type="text/javascript">
         if (typeof(window.eth) === "undefined") {
-            document.write('<script src="js/eth/eth.js"><\/script>');
             ethBrowser = false;
         } else {
             ethBrowser = true;
         }
-        if (typeof(window.bigInt) === "undefined") {
-            document.write('<script src="js/eth/BigInteger.js"><\/script>');
-            document.write('<script src="js/eth/ethString.js"><\/script>');
+    </script>
+    <script type="text/javascript" src="js/eth/eth.js"></script>
+    <script type="text/javascript" src="js/eth/BigInteger.js"></script>
+    <script type="text/javascript" src="js/eth/ethString.js"></script>
+    <script type="text/javascript">
+        if (!ethBrowser) {
+            window.eth.stateAt = window.eth.storageAt;
         }
     </script>
-
     <script type="text/javascript" src="js/coinstring.min.js"></script>
     <script type="text/javascript" src="js/moment.min.js"></script>
     <script type="text/javascript" src="js/scripts.js"></script>
