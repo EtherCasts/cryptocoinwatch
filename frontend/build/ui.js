@@ -32,7 +32,7 @@ var AddressRow = React.createClass({displayName: 'AddressRow',
     }
 });
 
-var WatchListTable = React.createClass({displayName: 'WatchListTable',
+var WatchList = React.createClass({displayName: 'WatchList',
     render: function() {
         var watchListNodes = this.props.watchList.map(function (address) {
             return (
@@ -93,7 +93,7 @@ var CryptoCoinWatchBox = React.createClass({displayName: 'CryptoCoinWatchBox',
         return (
             React.DOM.div({className: "spacer"}, 
                 StatisticsBox({contract: this.props.contract, statistics: this.state.statistics, watchList: this.state.watchList}), 
-                WatchListTable({watchList: this.state.watchList}), 
+                WatchList({watchList: this.state.watchList}), 
                 WatchForm(null)
             )
         );
