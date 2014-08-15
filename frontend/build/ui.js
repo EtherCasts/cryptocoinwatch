@@ -3,15 +3,36 @@
 var StatisticsBox = React.createClass({displayName: 'StatisticsBox',
     render: function() {
         return (
-            React.DOM.div({className: "statisticsBox"}, 
-                React.DOM.h3(null, "Statistics"), 
-                React.DOM.ul(null, 
-                    React.DOM.li(null, "Contract ", this.props.contract), 
-                    React.DOM.li(null, "Owner: ", this.props.statistics.owner), 
-                    React.DOM.li(null, "Source: ", this.props.statistics.source), 
-                    React.DOM.li(null, "Min. Confirmations: ", this.props.statistics.minConfirmations), 
-                    React.DOM.li(null, "Last Updated: ", CryptoCoinWatch.epochFromNow(this.props.statistics.lastUpdated)), 
-                    React.DOM.li(null, "Watch list length: ", this.props.watchList.length)
+            React.DOM.table({className: "statisticsBox table table-striped"}, 
+                React.DOM.tbody(null, 
+                    React.DOM.tr(null, 
+                        React.DOM.th(null, "Statistics"), 
+                        React.DOM.th(null)
+                    ), 
+                    React.DOM.tr(null, 
+                        React.DOM.td(null, "Contract"), 
+                        React.DOM.td(null, this.props.contract)
+                    ), 
+                    React.DOM.tr(null, 
+                        React.DOM.td(null, "Owner"), 
+                        React.DOM.td(null, this.props.statistics.owner)
+                    ), 
+                    React.DOM.tr(null, 
+                        React.DOM.td(null, "Source"), 
+                        React.DOM.td(null, this.props.statistics.source)
+                    ), 
+                    React.DOM.tr(null, 
+                        React.DOM.td(null, "Min. Confirmations"), 
+                        React.DOM.td(null, this.props.statistics.minConfirmations)
+                    ), 
+                    React.DOM.tr(null, 
+                        React.DOM.td(null, "Last Updated"), 
+                        React.DOM.td(null, CryptoCoinWatch.epochFromNow(this.props.statistics.lastUpdated))
+                    ), 
+                    React.DOM.tr(null, 
+                        React.DOM.td(null, "Watch list length"), 
+                        React.DOM.td(null, this.props.watchList.length)
+                    )
                 )
             )
         );
@@ -40,7 +61,7 @@ var WatchList = React.createClass({displayName: 'WatchList',
             );
         });
         return (
-            React.DOM.table({className: "watchList table"}, 
+            React.DOM.table({className: "watchList table table-striped"}, 
                 React.DOM.thead(null, 
                     React.DOM.tr(null, 
                         React.DOM.th(null, "Address"), 
@@ -70,11 +91,17 @@ var WatchForm = React.createClass({displayName: 'WatchForm',
     },
     render: function() {
         return (
-            React.DOM.form({className: "watchForm", onSubmit: this.handleSubmit}, 
+            React.DOM.div({className: "watchForm"}, 
                 React.DOM.h2(null, "Watch An Address"), 
-                React.DOM.label({htmlFor: "address"}, "Which cryptocurrency address do you want to watch?"), React.DOM.br(null), 
-                React.DOM.input({id: "address", ref: "address", type: "text", pattern: "^[a-km-zA-HJ-NP-Z1-9]{27,34}$", title: "Cryptocurrency address", placeholder: "Your address..."}), 
-                React.DOM.input({type: "submit", value: "Watch"})
+                React.DOM.form({onSubmit: this.handleSubmit}, 
+                    React.DOM.div({className: "form-group"}, 
+                        React.DOM.label({htmlFor: "address"}, "Which cryptocurrency address do you want to watch?"), 
+                        React.DOM.input({id: "address", ref: "address", className: "form-control", type: "text", pattern: "^[a-km-zA-HJ-NP-Z1-9]{27,34}$", title: "Cryptocurrency address", placeholder: "Your address..."})
+                    ), 
+                    React.DOM.div({className: "form-group"}, 
+                        React.DOM.input({type: "submit", value: "Watch", className: "btn btn-primary"})
+                    )
+                )
             )
         );
     }
@@ -111,6 +138,7 @@ var CryptoCoinWatchBox = React.createClass({displayName: 'CryptoCoinWatchBox',
     render: function() {
         return (
             React.DOM.div({className: "cryptoCoinWatchBox"}, 
+                React.DOM.h1(null, "CryptoCoinWatch"), 
                 StatisticsBox({contract: this.props.contract, statistics: this.state.statistics, watchList: this.state.watchList}), 
                 WatchList({watchList: this.state.watchList}), 
                 WatchForm({onWatchSubmit: this.handleWatchSubmit})

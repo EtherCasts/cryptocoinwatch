@@ -3,17 +3,38 @@
 var StatisticsBox = React.createClass({
     render: function() {
         return (
-            <div className="statisticsBox">
-                <h3>Statistics</h3>
-                <ul>
-                    <li>Contract {this.props.contract}</li>
-                    <li>Owner: {this.props.statistics.owner}</li>
-                    <li>Source: {this.props.statistics.source}</li>
-                    <li>Min. Confirmations: {this.props.statistics.minConfirmations}</li>
-                    <li>Last Updated: {CryptoCoinWatch.epochFromNow(this.props.statistics.lastUpdated)}</li>
-                    <li>Watch list length: {this.props.watchList.length}</li>
-                </ul>
-            </div>
+            <table className="statisticsBox table table-striped">
+                <tbody>
+                    <tr>
+                        <th>Statistics</th>
+                        <th />
+                    </tr>
+                    <tr>
+                        <td>Contract</td>
+                        <td>{this.props.contract}</td>
+                    </tr>
+                    <tr>
+                        <td>Owner</td>
+                        <td>{this.props.statistics.owner}</td>
+                    </tr>
+                    <tr>
+                        <td>Source</td>
+                        <td>{this.props.statistics.source}</td>
+                    </tr>
+                    <tr>
+                        <td>Min. Confirmations</td>
+                        <td>{this.props.statistics.minConfirmations}</td>
+                    </tr>
+                    <tr>
+                        <td>Last Updated</td>
+                        <td>{CryptoCoinWatch.epochFromNow(this.props.statistics.lastUpdated)}</td>
+                    </tr>
+                    <tr>
+                        <td>Watch list length</td>
+                        <td>{this.props.watchList.length}</td>
+                    </tr>
+                </tbody>
+            </table>
         );
     }
 });
@@ -40,7 +61,7 @@ var WatchList = React.createClass({
             );
         });
         return (
-            <table className="watchList table">
+            <table className="watchList table table-striped">
                 <thead>
                     <tr>
                         <th>Address</th>
@@ -70,12 +91,18 @@ var WatchForm = React.createClass({
     },
     render: function() {
         return (
-            <form className="watchForm" onSubmit={this.handleSubmit}>
+            <div className="watchForm">
                 <h2>Watch An Address</h2>
-                <label htmlFor="address">Which cryptocurrency address do you want to watch?</label><br />
-                <input id="address" ref="address" type="text" pattern="^[a-km-zA-HJ-NP-Z1-9]{27,34}$"title="Cryptocurrency address" placeholder="Your address..." />
-                <input type="submit" value="Watch" />
-            </form>
+                <form onSubmit={this.handleSubmit}>
+                    <div className="form-group">
+                        <label htmlFor="address">Which cryptocurrency address do you want to watch?</label>
+                        <input id="address" ref="address" className="form-control" type="text" pattern="^[a-km-zA-HJ-NP-Z1-9]{27,34}$"title="Cryptocurrency address" placeholder="Your address..." />
+                    </div>
+                    <div className="form-group">
+                        <input type="submit" value="Watch" className="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
         );
     }
 });
@@ -111,6 +138,7 @@ var CryptoCoinWatchBox = React.createClass({
     render: function() {
         return (
             <div className="cryptoCoinWatchBox">
+                <h1>CryptoCoinWatch</h1>
                 <StatisticsBox contract={this.props.contract} statistics={this.state.statistics} watchList={this.state.watchList} />
                 <WatchList watchList={this.state.watchList} />
                 <WatchForm onWatchSubmit={this.handleWatchSubmit} />
