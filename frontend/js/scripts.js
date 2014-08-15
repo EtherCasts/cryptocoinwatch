@@ -1,4 +1,4 @@
-(function($) {
+(function() {
 
     var cs = require('coinstring');
     var buffer = require('buffer');
@@ -78,8 +78,7 @@
         return '0x' + hash;
     };
 
-    CryptoCoinWatch.watchAddress = function() {
-        var address = $("#address").val();
+    CryptoCoinWatch.watchAddress = function(contract, address) {
         var hex;
         try {
             hex = CryptoCoinWatch.addressToHex(address);
@@ -90,7 +89,7 @@
         eth.transact(
             eth.key,
             "0",
-            CryptoCoinWatch.contractAddress,
+            contract,
             CryptoCoinWatch.cmdWatch.pad(32) + hex.pad(32),
             "10000",
             eth.gasPrice,
@@ -99,12 +98,4 @@
             }
         );
     };
-
-    $(document).ready(function() {
-        $("#btn-watch").click(function() {
-            console.log("click");
-            CryptoCoinWatch.watchAddress();
-        });
-    });
-
-})(jQuery);
+})();

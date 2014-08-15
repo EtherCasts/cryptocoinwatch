@@ -59,14 +59,23 @@ var WatchList = React.createClass({
 });
 
 var WatchForm = React.createClass({
+    handleSubmit: function() {
+        var address = this.refs.address.getDOMNode().value.trim();
+        if (!address) {
+            return false;
+        }
+        this.props.onWatchSubmit(address);
+        this.refs.address.getDOMNode().value = '';
+        return false;
+    },
     render: function() {
         return (
-            <div className="watchForm">
+            <form className="watchForm" onSubmit={this.handleSubmit}>
                 <h2>Watch An Address</h2>
-                <label for="address">Which cryptocurrency address do you want to watch?</label>
-                <input id="address" type="text" /><br />
-                <button id="btn-watch">WATCH</button>
-            </div>
+                <label htmlFor="address">Which cryptocurrency address do you want to watch?</label><br />
+                <input id="address" ref="address" type="text" pattern="^[a-km-zA-HJ-NP-Z1-9]{27,34}$"title="Cryptocurrency address" placeholder="Your address..." />
+                <input type="submit" value="Watch" />
+            </form>
         );
     }
 });
@@ -74,6 +83,16 @@ var WatchForm = React.createClass({
 var CryptoCoinWatchBox = React.createClass({
     getInitialState: function() {
         return {statistics: {}, watchList: []};
+    },
+    handleWatchSubmit: function(address) {
+        var watchList = this.state.watchList;
+        var result = _.find(watchList, function(obj) { return obj.btcAddress === address });
+        // do an optimistic updates if address is not yet present
+        if (result.length == 0) {
+            var newWatchList = watchList.concat([{btcAddress: address}]);
+            this.setState({watchList: newWatchList});
+        }
+        CryptoCoinWatch.watchAddress(this.props.contract, address);
     },
     loadStatistics: function() {
         var statistics = CryptoCoinWatch.getStatistics(this.props.contract);
@@ -94,7 +113,7 @@ var CryptoCoinWatchBox = React.createClass({
             <div className="cryptoCoinWatchBox">
                 <StatisticsBox contract={this.props.contract} statistics={this.state.statistics} watchList={this.state.watchList} />
                 <WatchList watchList={this.state.watchList} />
-                <WatchForm />
+                <WatchForm onWatchSubmit={this.handleWatchSubmit} />
             </div>
         );
     }

@@ -59,13 +59,22 @@ var WatchList = React.createClass({displayName: 'WatchList',
 });
 
 var WatchForm = React.createClass({displayName: 'WatchForm',
+    handleSubmit: function() {
+        var address = this.refs.address.getDOMNode().value.trim();
+        if (!address) {
+            return false;
+        }
+        this.props.onWatchSubmit(address);
+        this.refs.address.getDOMNode().value = '';
+        return false;
+    },
     render: function() {
         return (
-            React.DOM.div({className: "watchForm"}, 
+            React.DOM.form({className: "watchForm", onSubmit: this.handleSubmit}, 
                 React.DOM.h2(null, "Watch An Address"), 
-                React.DOM.label({for: "address"}, "Which cryptocurrency address do you want to watch?"), 
-                React.DOM.input({id: "address", type: "text"}), React.DOM.br(null), 
-                React.DOM.button({id: "btn-watch"}, "WATCH")
+                React.DOM.label({htmlFor: "address"}, "Which cryptocurrency address do you want to watch?"), React.DOM.br(null), 
+                React.DOM.input({id: "address", ref: "address", type: "text", pattern: "^[a-km-zA-HJ-NP-Z1-9]{27,34}$", title: "Cryptocurrency address", placeholder: "Your address..."}), 
+                React.DOM.input({type: "submit", value: "Watch"})
             )
         );
     }
@@ -74,6 +83,16 @@ var WatchForm = React.createClass({displayName: 'WatchForm',
 var CryptoCoinWatchBox = React.createClass({displayName: 'CryptoCoinWatchBox',
     getInitialState: function() {
         return {statistics: {}, watchList: []};
+    },
+    handleWatchSubmit: function(address) {
+        var watchList = this.state.watchList;
+        var result = _.find(watchList, function(obj) { return obj.btcAddress === address });
+        // do an optimistic updates if address is not yet present
+        if (result.length == 0) {
+            var newWatchList = watchList.concat([{btcAddress: address}]);
+            this.setState({watchList: newWatchList});
+        }
+        CryptoCoinWatch.watchAddress(this.props.contract, address);
     },
     loadStatistics: function() {
         var statistics = CryptoCoinWatch.getStatistics(this.props.contract);
@@ -94,7 +113,7 @@ var CryptoCoinWatchBox = React.createClass({displayName: 'CryptoCoinWatchBox',
             React.DOM.div({className: "cryptoCoinWatchBox"}, 
                 StatisticsBox({contract: this.props.contract, statistics: this.state.statistics, watchList: this.state.watchList}), 
                 WatchList({watchList: this.state.watchList}), 
-                WatchForm(null)
+                WatchForm({onWatchSubmit: this.handleWatchSubmit})
             )
         );
     }
