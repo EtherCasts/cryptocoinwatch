@@ -115,7 +115,7 @@ var CryptoCoinWatchBox = React.createClass({displayName: 'CryptoCoinWatchBox',
         var watchList = this.state.watchList;
         var result = _.find(watchList, function(obj) { return obj.btcAddress === address });
         // do an optimistic updates if address is not yet present
-        if (result.length == 0) {
+        if (typeof result === "undefined") {
             var newWatchList = watchList.concat([{btcAddress: address}]);
             this.setState({watchList: newWatchList});
         }

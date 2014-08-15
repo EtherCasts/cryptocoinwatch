@@ -96,7 +96,7 @@ var WatchForm = React.createClass({
                 <form onSubmit={this.handleSubmit}>
                     <div className="form-group">
                         <label htmlFor="address">Which cryptocurrency address do you want to watch?</label>
-                        <input id="address" ref="address" className="form-control" type="text" pattern="^[a-km-zA-HJ-NP-Z1-9]{27,34}$"title="Cryptocurrency address" placeholder="Your address..." />
+                        <input id="address" ref="address" className="form-control" type="text" pattern="^[a-km-zA-HJ-NP-Z1-9]{27,34}$" title="Cryptocurrency address" placeholder="Your address..." />
                     </div>
                     <div className="form-group">
                         <input type="submit" value="Watch" className="btn btn-primary" />
@@ -115,7 +115,7 @@ var CryptoCoinWatchBox = React.createClass({
         var watchList = this.state.watchList;
         var result = _.find(watchList, function(obj) { return obj.btcAddress === address });
         // do an optimistic updates if address is not yet present
-        if (result.length == 0) {
+        if (typeof result === "undefined") {
             var newWatchList = watchList.concat([{btcAddress: address}]);
             this.setState({watchList: newWatchList});
         }
