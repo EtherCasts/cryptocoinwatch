@@ -9,7 +9,7 @@ Ethereum datafeed to watch the amount received of crypto currencies. This data c
 
 The CryptoCoinWatch DApp lets you inspect a datafeed and allows you to watch a new address. See above screenshot for an impression. This is for development and testing purposes only, as normally contracts will directly communicate with the contract itself.
 
-Open the DApp in your Ethereum client (AlethZero POC6): http://ethercasts.github.io/cryptocoinwatch/cryptocoinwatch.html
+Open the DApp in your Ethereum client (AlethZero POC6): http://ethercasts.github.io/cryptocoinwatch/frontend/
 
 ## Contract
 
