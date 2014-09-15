@@ -7,8 +7,7 @@
 
     CryptoCoinWatch.cmdWatch = "0x7761746368";
 
-    //CryptoCoinWatch.contractAddress = "0xcd5805d60bbf9afe69a394c2bda10f6dae2c39af";
-    CryptoCoinWatch.contractAddress = "0x83c5541a6c8d2dbad642f385d8d06ca9b6c731ee";
+    CryptoCoinWatch.contractAddress = "0x987c1f13d417f7e04d852b44badc883e4e9782e1";
 
     CryptoCoinWatch.addressOffset = bigInt(2).pow(160);
     CryptoCoinWatch.addressRecordSize = bigInt(4);
