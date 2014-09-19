@@ -62,7 +62,7 @@ var WatchList = React.createClass({
     render: function() {
         var watchListNodes = this.props.watchList.map(function (address) {
             return (
-                <AddressRow address={address} />
+                <AddressRow key={address.btcAddress} address={address} />
             );
         });
         return (
