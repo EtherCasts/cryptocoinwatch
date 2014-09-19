@@ -1,7 +1,7 @@
-if (typeof(require) !== "undefined")
-	require( ['BigInteger'], function() {} )
-else if (typeof(bigInt) === "undefined")
-	alert("You need to have included BigInteger.js for eth to work.")
+// if (typeof(require) !== "undefined")
+// 	require( ['./BigInteger.js'], function() {} )
+// else if (typeof(bigInt) === "undefined")
+// 	alert("You need to have included BigInteger.js for eth to work.")
 
 String.prototype.pad = function(l, r) {
 	if (r === null) {
@@ -56,7 +56,7 @@ String.prototype.dec = function() {
 }
 
 String.prototype.hex = function() {
-    return bigInt(this.substr(0)).toHex()
+    return bigIng(this.substr(0)).toHex()
 }
 
 

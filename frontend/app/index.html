@@ -14,14 +14,6 @@
             ethBrowser = true;
         }
     </script>
-    <script type="text/javascript" src="js/eth/eth.js"></script>
-    <script type="text/javascript" src="js/eth/BigInteger.js"></script>
-    <script type="text/javascript" src="js/eth/ethString.js"></script>
-    <script type="text/javascript">
-        if (!ethBrowser) {
-            window.eth.stateAt = window.eth.storageAt;
-        }
-    </script>
 </head>
 <body>
     <div id="container" class="container"></div>
