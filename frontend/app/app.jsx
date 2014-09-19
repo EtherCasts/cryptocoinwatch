@@ -18,13 +18,13 @@ require("bootstrap/dist/css/bootstrap.min.css");
 require("bootstrap/dist/css/bootstrap-theme.min.css");
 
 // eth.js compatibility
+var bigInt = require("./js/eth/BigInteger.js");
+window.bigInt = bigInt;
+
+require("./js/eth/ethString.js");
+
 /* global ethBrowser */
 if (!ethBrowser) {
-  var bigInt = require("./js/eth/BigInteger.js");
-  window.bigInt = bigInt;
-
-  require("./js/eth/ethString.js");
-
   var eth = require("./js/eth/eth.js");
   window.eth = eth;
 
