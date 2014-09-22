@@ -25,27 +25,25 @@ require("./js/eth/ethString.js");
 
 /* global ethBrowser */
 if (!ethBrowser) {
-  var eth = require("./js/eth/eth.js");
-  window.eth = eth;
+    var eth = require("./js/eth/eth.js");
+    window.eth = eth;
 
-  eth.stateAt = eth.storageAt;
-  eth.messages = function() { return {}; };
-  eth.toDecimal = function(x) { return x.dec(); };
-  eth.fromAscii = function(x) { return x.unbin(); };
-  eth.toAscii = function(x) { return x.bin().unpad(); };
-  eth.pad = function(x, l) { return String(x).pad(l); };
-  /*eth.oldtransact = function(i, c) { // a_s, f_v, t, d, g, p, f) {
-    if (i.to === null) {
-      var r = eth.transact(JSON.stringify(i.from));
-      if (i.value)
-        i.value(r);
-    }
-    else {
-      console.log('POC 5 eth.transact is deprecated, tell DEV to fix eth.js');
-      eth.transact(i.from, i.value, i.to, i.data, i.gas, i.gasPrice);
-      if (f) f();
-    }
-  };*/
+    eth.stateAt = eth.storageAt;
+    eth.messages = function() { return {}; };
+    eth.toDecimal = function(x) { return x.dec(); };
+    eth.fromAscii = function(x) { return x.unbin(); };
+    eth.toAscii = function(x) { return x.bin().unpad(); };
+    eth.pad = function(x, l) { return String(x).pad(l); };
+    /* eth.oldtransact = function(i, c) { // a_s, f_v, t, d, g, p, f) {
+        if (i.to === null) {
+            var r = eth.transact(JSON.stringify(i.from));
+            if (i.value) i.value(r);
+        } else {
+            console.log('POC 5 eth.transact is deprecated, tell DEV to fix eth.js');
+            eth.transact(i.from, i.value, i.to, i.data, i.gas, i.gasPrice);
+            if (f) f();
+        }
+    };*/
 }
 
 var CryptoCoinWatch = require("./CryptoCoinWatch");
