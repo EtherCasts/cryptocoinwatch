@@ -49,21 +49,20 @@ class Api(object):
 
         return response.get('result')
 
+    def accounts(self):
+        return self._rpc_post('eth_accounts', None)
+
     def balance_at(self, address):
-        params = {
-            'a': address
-        }
-        balance = self._rpc_post('balanceAt', params)
+        params = [address]
+        balance = self._rpc_post('eth_balanceAt', params)
         if balance == "0x":
             return 0
         else:
             return int(balance, 16)
 
     def block(self, nr):
-        params = {
-            'a': nr
-        }
-        return self._rpc_post('block', params)
+        params = [nr]
+        return self._rpc_post('eth_blockByNumber', params)
 
     def check(self, addresses):
         params = {
@@ -72,7 +71,7 @@ class Api(object):
         return self._rpc_post('check', params)
 
     def coinbase(self):
-        return self._rpc_post('coinbase', None)
+        return self._rpc_post('eth_coinbase', None)
 
     def create(self, code, secret=DEFAULT_KEY, gas=DEFAULT_GAS, gas_price=GAS_PRICE, endowment=0):
         if not code.startswith('0x'):
@@ -92,10 +91,10 @@ class Api(object):
         return self._rpc_post('isContractAt', params)
 
     def is_listening(self):
-        return self._rpc_post('isListening', None)
+        return self._rpc_post('eth_listening', None)
 
     def is_mining(self):
-        return self._rpc_post('isMining', None)
+        return self._rpc_post('eth_mining', None)
 
     def key(self):
         return self._rpc_post('key', None)
@@ -104,22 +103,19 @@ class Api(object):
         return self._rpc_post('keys', None)
 
     def last_block(self):
-        return self._rpc_post('lastBlock', None)
+        return self.block(-1)
 
     def lll(self, contract):
         params = {
             's': contract
         }
-        return self._rpc_post('lll', params)
+        return self._rpc_post('eth_lll', params)
+
+    def number(self):
+        return self._rpc_post('eth_number', None)
 
     def peer_count(self):
-        return self._rpc_post('peerCount', None)
-
-    def secret_to_address(self, key):
-        params = {
-            'a': key
-        }
-        return self._rpc_post('secretToAddress', params)
+        return self._rpc_post('eth_peerCount', None)
 
     def storage_at(self, address, index):
         params = {
@@ -127,20 +123,20 @@ class Api(object):
             'x': index}
         return self._rpc_post('storageAt', params)
 
-    def transact(self, dest, secret=DEFAULT_KEY, data="", gas=DEFAULT_GAS, gas_price=GAS_PRICE, value=0):
+    def transact(self, dest, from_=DEFAULT_ADDRESS, data="", gas=DEFAULT_GAS, gas_price=GAS_PRICE, value=0):
         if not dest.startswith('0x'):
             dest = '0x' + dest
         if data:
             data = "0x" + serpent.encode_datalist(data).encode('hex')
 
-        params = {
-            'aDest': dest,
-            'bData': data,
-            'sec': secret,
-            'xGas': hex(gas),
-            'xGasPrice': hex(gas_price),
-            'xValue': hex(value)}
-        return self._rpc_post('transact', params)
+        params = [{
+            'to': dest,
+            'data': data,
+            'from': from_,
+            'gas': hex(gas),
+            'gasPrice': hex(gas_price),
+            'value': hex(value)}]
+        return self._rpc_post('eth_transact', params)
 
     def wait_for_next_block(self, verbose=False):
         if verbose:

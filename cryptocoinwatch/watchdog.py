@@ -60,15 +60,15 @@ def cmd_status(args):
     print "Listening? %s" % args.api.is_listening()
     print "Mining? %s" % args.api.is_mining()
     print "Peer count: %d" % args.api.peer_count()
+    print "Number: %d" % args.api.number()
 
     last_block = args.api.last_block()
     print "Last Block:"
     pprint(last_block)
 
-    keys = args.api.keys()
-    print "Keys:"
-    for key in keys:
-        address = args.api.secret_to_address(key)
+    accounts = args.api.accounts()
+    print "Accounts:"
+    for address in accounts:
         balance = args.api.balance_at(address)
         print "- %s %.4e" % (address, balance)
 
