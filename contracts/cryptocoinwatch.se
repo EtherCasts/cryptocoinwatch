@@ -1,62 +1,83 @@
 # CryptoCoinWatch - Ethereum datafeed to watch the amount received of crypto currencies
 
-shared:
-    OWNER = 0x10
-    SOURCE = 0x11
-    MIN_CONFIRMATIONS = 0x12
-    LAST_UPDATED = 0x13
-    WATCH_LIST = 0x20
-    ADDRESS_OFFSET = 2 ^ 160
-    ADDRESS_MAX = 2 ^ 168
-    ADDRESS_RECORD_SIZE = 4
+data owner
+data source
+data min_confirmations
+data last_updated
 
-    ADDRESS_RECEIVED_BY_ADDRESS = 0
-    ADDRESS_LAST_UPDATED = 1
-    ADDRESS_NR_WATCHED = 2
-    ADDRESS_LAST_WATCHED = 3
+data nr_contracts
+data watch_list[2^160]
 
-init:
-    contract.storage[OWNER] = msg.sender
-    contract.storage[SOURCE] = "blockchain.info"
-    contract.storage[MIN_CONFIRMATIONS] = 6
+data addresses[2^168](recieved_by_address, last_updated, nr_watched, last_watched)
 
-code:
-    cmd = msg.data[0]
-    if cmd == "suicide" and msg.sender == contract.storage[OWNER]:
+
+#shared:
+#    OWNER = 0x10
+#    SOURCE = 0x11
+#    MIN_CONFIRMATIONS = 0x12
+#    LAST_UPDATED = 0x13
+#    WATCH_LIST = 0x20
+#    ADDRESS_OFFSET = 2 ^ 160
+#    ADDRESS_MAX = 2 ^ 168
+#    ADDRESS_RECORD_SIZE = 4
+#
+#    ADDRESS_RECEIVED_BY_ADDRESS = 0
+#    ADDRESS_LAST_UPDATED = 1
+#    ADDRESS_NR_WATCHED = 2
+#    ADDRESS_LAST_WATCHED = 3
+
+def init():
+    self.owner = msg.sender
+    self.source = "blockchain.info"
+    self.min_confirmations = 6
+
+# funid=0
+def getinfo():
+    return([self.owner, self.source, self.min_confirmations], 3)
+
+# funid=1
+def echo(input):
+    return(input * 2)
+
+# funid=2
+def suicide():
+    if msg.sender == self.owner:
         suicide(msg.sender)
+    return(0)
 
-    address = msg.data[1]
-    if address > ADDRESS_MAX:
-        return(0)
-    address_idx = ADDRESS_OFFSET + address * ADDRESS_RECORD_SIZE
+# funid=3
+def watch(address):
+    nr_watched = self.addresses[address].nr_watched
 
-    if cmd == "watch":
-        nr_watched = contract.storage[address_idx + ADDRESS_NR_WATCHED]
+    # check if address isn't already watched
+    if nr_watched > 0:
+         self.addresses[address].nr_watched = nr_watched + 1
+         self.addresses[address].last_watched = block.timestamp
+         return(2)
 
-        # check if address isn't already watched
-        if nr_watched > 0:
-            contract.storage[address_idx + ADDRESS_NR_WATCHED] = nr_watched + 1
-            contract.storage[address_idx + ADDRESS_LAST_WATCHED] = block.timestamp
-            return(2)
+    nr_contracts = self.nr_contracts
+    self.watch_list[nr_contracts] = address
+    self.nr_contracts = nr_contracts + 1
+    self.addresses[address].recieved_by_address = 0
+    self.addresses[address].recieved_by_address = 0
+    self.addresses[address].last_updated = 0
+    self.addresses[address].last_watched = block.timestamp
+    return(1)
 
-        nr_contracts = contract.storage[WATCH_LIST]
-        contract.storage[WATCH_LIST + nr_contracts + 1] = msg.data[1]
-        contract.storage[WATCH_LIST] = nr_contracts + 1
-        contract.storage[address_idx + ADDRESS_RECEIVED_BY_ADDRESS] = 0
-        contract.storage[address_idx + ADDRESS_LAST_UPDATED] = 0
-        contract.storage[address_idx + ADDRESS_NR_WATCHED] = 1
-        contract.storage[address_idx + ADDRESS_LAST_WATCHED] = block.timestamp
-        return(1)
+# funid=4
+def getaddress(address):
+    return([self.addresses[address].recieved_by_address, self.addresses[address].last_updated, self.addresses[address].nr_watched, self.addresses[address].last_watched], 4)
 
-    elif cmd == "getreceivedbyaddress":
-        result = array(2)
-        result[0] = contract.storage[address_idx + ADDRESS_RECEIVED_BY_ADDRESS]
-        result[1] = contract.storage[address_idx + ADDRESS_LAST_UPDATED]
-        return(result, 2)
+def getreceivedbyaddress():
+    result = array(2)
+    #result[0] = contract.storage[address_idx + ADDRESS_RECEIVED_BY_ADDRESS]
+    #result[1] = contract.storage[address_idx + ADDRESS_LAST_UPDATED]
+    return(result, 2)
 
-    elif cmd == "setreceivedbyaddress" and msg.sender == contract.storage[OWNER]:
-        contract.storage[address_idx + ADDRESS_RECEIVED_BY_ADDRESS] = msg.data[2]
-        contract.storage[address_idx + ADDRESS_LAST_UPDATED] = block.timestamp
-        contract.storage[LAST_UPDATED] = block.timestamp
+def setreceivedbyaddress():
+    if msg.sender == self.owner:
+        #contract.storage[address_idx + ADDRESS_RECEIVED_BY_ADDRESS] = msg.data[2]
+        #contract.storage[address_idx + ADDRESS_LAST_UPDATED] = block.timestamp
+        #contract.storage[LAST_UPDATED] = block.timestamp
         return(1)
     return(0)

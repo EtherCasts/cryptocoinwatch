@@ -1,9 +1,25 @@
 from pyethereum import tester
+import pyethereum.processblock as pb
+
+from cryptocoinwatch.utils import address_to_hex, xhex
 
 import logging
 from pprint import pprint
 
-from cryptocoinwatch.utils import address_to_hex, hex_pad, xhex
+logging.basicConfig(level=logging.DEBUG, format='%(message)s')
+logger = logging.getLogger()
+pblogger = pb.pblogger
+
+# customize VM log output to your needs
+# hint: use 'py.test' with the '-s' option to dump logs to the console
+pblogger.log_pre_state = False    # dump storage at account before execution
+pblogger.log_post_state = False   # dump storage at account after execution
+pblogger.log_block = False       # dump block after TX was applied
+pblogger.log_memory = False      # dump memory before each op
+pblogger.log_op = False           # log op, gas, stack before each op
+pblogger.log_json = False        # generate machine readable output
+pblogger.log_apply_op = False     # generate machine readable output
+pblogger.log_stack = False        # generate machine readable output
 
 
 class TestCryptoCoinWatch(object):
@@ -11,17 +27,13 @@ class TestCryptoCoinWatch(object):
     ADDRESS_OFFSET = 2 ** 160
     ADDRESS_RECORD_SIZE = 4
 
-    @classmethod
-    def setup_class(cls):
-        logging.disable(logging.INFO)  # disable DEBUG logging of pyethereum.processblock
-        cls.code = open('contracts/cryptocoinwatch.se').read()
+    CONTRACT = 'contracts/cryptocoinwatch.se'
 
     def setup_method(self, method):
         self.s = tester.state()
-        self.c = self.s.contract(self.code)
+        self.c = self.s.contract(self.CONTRACT)
 
     def _storage(self, idx):
-        idx = hex_pad(idx)
         return self.s.block.account_to_dict(self.c)['storage'].get(idx)
 
     def _address_record(self, address):
@@ -34,36 +46,40 @@ class TestCryptoCoinWatch(object):
             'last_watched': int(self._storage(address_idx + 3) or '0x0', 16)}
 
     def test_init(self):
-        assert self._storage(0x10) == '0x' + tester.a0
-        assert self._storage(0x11) == '0x' + 'blockchain.info'.encode('hex')
-        assert self._storage(0x12) == '0x06'
+        assert self._storage('0x') == '0x' + tester.a0
+        assert self._storage('0x01') == '0x' + 'blockchain.info'.encode('hex')
+        assert self._storage('0x02') == '0x06'
+        o1 = self.s.send(tester.k0, self.c, 0, funid=0, abi=[])
+        assert o1 == [int('0x' + tester.a0, 16), int('0x' + 'blockchain.info'.encode('hex'), 16), 6]
+
+    def test_echo(self):
+        assert [4] == self.s.send(tester.k0, self.c, 0, funid=1, abi=[2])
 
     def test_suicide(self):
-        o1 = self.s.send(tester.k0, self.c, 0, ['suicide'])
+        o1 = self.s.send(tester.k0, self.c, 0, funid=2, abi=[])
         assert o1 == []
         assert self.s.block.get_code(self.c) == ''
 
     def test_suicide_by_non_owner_should_fail(self):
-        o1 = self.s.send(tester.k1, self.c, 0, ['suicide'])
+        o1 = self.s.send(tester.k1, self.c, 0, funid=2, abi=[])
         assert o1 == [0]
         assert self.s.block.get_code(self.c) != ''
 
     def test_watch(self):
-        o1 = self.s.send(tester.k0, self.c, 0, ['watch', self.ADDRESS])
+        o1 = self.s.send(tester.k0, self.c, 0, funid=3, abi=[self.ADDRESS])
         assert o1 == [1]
 
-        assert self._storage(0x20) == '0x01'
-        assert self._storage(0x21) == xhex(self.ADDRESS)
+        assert self._storage('0x04') == '0x01'  # nr_contracts
+        assert self._storage('0x05') == xhex(self.ADDRESS)
 
-        assert self._address_record(self.ADDRESS) == {
-            'received_by_address': 0,
-            'last_updated': 0,
-            'nr_watched': 1,
-            'last_watched': self.s.block.timestamp}
+        o1 = self.s.send(tester.k0, self.c, 0, funid=4, abi=[self.ADDRESS])
+        assert o1 == [0, 0, 0, self.s.block.timestamp]
 
     def test_watch_invalid_address_should_fail(self):
         o1 = self.s.send(tester.k0, self.c, 0, ['watch', 2 ** 180])
         assert o1 == [0]
+
+        # assert self.s.block.account_to_dict(self.c)['storage'] == {}
 
     def test_watch_twice_should_update(self):
         o1 = self.s.send(tester.k0, self.c, 0, ['watch', self.ADDRESS])

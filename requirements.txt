@@ -1,7 +1,7 @@
 ethereum-serpent==1.7.4
 flake8==2.2.5
 bitcoin==1.1.23
-pyethereum==0.7.36-1-dirty
+-e ../pyethereum
 pytest==2.6.4
 pytest-xdist==1.11
 requests==2.4.3
