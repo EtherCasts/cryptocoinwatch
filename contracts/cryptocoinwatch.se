@@ -10,34 +10,19 @@ data watch_list[2^160]
 
 data addresses[2^168](recieved_by_address, last_updated, nr_watched, last_watched)
 
-
-#shared:
-#    OWNER = 0x10
-#    SOURCE = 0x11
-#    MIN_CONFIRMATIONS = 0x12
-#    LAST_UPDATED = 0x13
-#    WATCH_LIST = 0x20
-#    ADDRESS_OFFSET = 2 ^ 160
-#    ADDRESS_MAX = 2 ^ 168
-#    ADDRESS_RECORD_SIZE = 4
-#
-#    ADDRESS_RECEIVED_BY_ADDRESS = 0
-#    ADDRESS_LAST_UPDATED = 1
-#    ADDRESS_NR_WATCHED = 2
-#    ADDRESS_LAST_WATCHED = 3
-
 def init():
     self.owner = msg.sender
     self.source = "blockchain.info"
     self.min_confirmations = 6
+    self.last_updated = block.timestamp
 
 # funid=0
 def getinfo():
-    return([self.owner, self.source, self.min_confirmations], 3)
+    return([self.owner, self.source, self.min_confirmations, self.last_updated], 4)
 
 # funid=1
 def echo(input):
-    return(input * 2)
+    return(input)
 
 # funid=2
 def suicide():
@@ -47,6 +32,9 @@ def suicide():
 
 # funid=3
 def watch(address):
+    if address > 2 ^ 168:
+        return(0)
+
     nr_watched = self.addresses[address].nr_watched
 
     # check if address isn't already watched
@@ -59,25 +47,33 @@ def watch(address):
     self.watch_list[nr_contracts] = address
     self.nr_contracts = nr_contracts + 1
     self.addresses[address].recieved_by_address = 0
-    self.addresses[address].recieved_by_address = 0
     self.addresses[address].last_updated = 0
+    self.addresses[address].nr_watched = 1
     self.addresses[address].last_watched = block.timestamp
     return(1)
 
 # funid=4
 def getaddress(address):
+    if address > 2 ^ 168:
+        return(0)
+
     return([self.addresses[address].recieved_by_address, self.addresses[address].last_updated, self.addresses[address].nr_watched, self.addresses[address].last_watched], 4)
 
-def getreceivedbyaddress():
-    result = array(2)
-    #result[0] = contract.storage[address_idx + ADDRESS_RECEIVED_BY_ADDRESS]
-    #result[1] = contract.storage[address_idx + ADDRESS_LAST_UPDATED]
-    return(result, 2)
+# funid=5
+def getreceivedbyaddress(address):
+    if address > 2 ^ 168:
+        return(0)
 
-def setreceivedbyaddress():
+    return([self.addresses[address].recieved_by_address, self.addresses[address].last_updated], 2)
+
+# funid=6
+def setreceivedbyaddress(address, value):
+    if address > 2 ^ 168:
+        return(0)
+
     if msg.sender == self.owner:
-        #contract.storage[address_idx + ADDRESS_RECEIVED_BY_ADDRESS] = msg.data[2]
-        #contract.storage[address_idx + ADDRESS_LAST_UPDATED] = block.timestamp
-        #contract.storage[LAST_UPDATED] = block.timestamp
+        self.addresses[address].recieved_by_address = value
+        self.addresses[address].last_updated = block.timestamp
+        self.last_updated = block.timestamp
         return(1)
     return(0)
