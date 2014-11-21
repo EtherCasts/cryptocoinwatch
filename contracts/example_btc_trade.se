@@ -18,74 +18,62 @@
 # - amount received, send escrowed ETH to seller
 # - amount not received; nothing happens
 
-shared:
-    BUYER = 0x10
-    SELLER = 0x11
-    DATAFEED = 0x12
+data buyer
+data seller
+data datafeed
 
-    BTC_ADDRESS = 0x20
-    BTC_AMOUNT = 0x21
-    EXPIRY = 0x22
+data btc_address
+data btc_amount
+data expiry
 
-    STATE = 0x30
+data state
 
-    S_NEW = 1
-    S_PENDING = 2
-    S_FINISHED = 3
-    S_EXPIRED = 4
+extern cryptocoinwatch = [getinfo, echo, suicide, watch, getaddress, getreceivedbyaddress, setreceivedbyaddress]
 
-init:
-    contract.storage[BUYER] = msg.sender
-    contract.storage[STATE] = S_NEW
+def init():
+    self.buyer = msg.sender
+    self.state = 1  # S_NEW
 
-code:
-    cmd = msg.data[0]
-    state = contract.storage[STATE]
-
-    if state == S_NEW and cmd == "new" and msg.sender == contract.storage[BUYER]:
-        if msg.data[1] == 0 or msg.data[2] == 0 or msg.data[3] == 0 or msg.data[4] == 0 or msg.data[5] == 0 or msg.value == 0:
+# funid=0
+def new(seller, datafeed, btc_address, btc_amount, expiry):
+    if self.state == 1 and msg.sender == self.buyer:
+        if seller == 0 or datafeed == 0 or btc_address == 0 or btc_amount == 0 or expiry == 0:
             # invalid arguments
             return(0)
 
         # requests datafeed to watch btc_address
-        args = array(2)
-        args[0] = "watch"
-        args[1] = msg.data[3]
-
-        values = msg(tx.gas - 25, msg.data[2], 0, args, 2)
+        values = datafeed.watch(btc_address, as=cryptocoinwatch)
         if values > 0:
             # initialize contract
-            contract.storage[SELLER] = msg.data[1]
-            contract.storage[DATAFEED] = msg.data[2]
+            self.seller = seller
+            self.datafeed = datafeed
 
-            contract.storage[BTC_ADDRESS] = msg.data[3]
-            contract.storage[BTC_AMOUNT] = msg.data[4]
-            contract.storage[EXPIRY] = msg.data[5]
+            self.btc_address = btc_address
+            self.btc_amount = btc_amount
+            self.expiry = expiry
 
-            contract.storage[STATE] = S_PENDING
-            return(S_PENDING)
+            self.state = 2  # S_PENDING
+            return(2)  # S_PENDING
+    return(0)
 
-    elif state == S_PENDING and cmd == "finish" and msg.sender == contract.storage[BUYER] or msg.sender == contract.storage[SELLER]:
-        if contract.storage[EXPIRY] < block.timestamp:
+# funid=1
+def finish():
+    if self.state == 2 and msg.sender == self.buyer or msg.sender == self.seller:
+        if self.expiry < block.timestamp:
             # expired, refund buyer
-            send(contract.storage[BUYER], contract.balance)
-            contract.storage[STATE] = S_EXPIRED
-            return(S_EXPIRED)
+            send(self.buyer, self.balance)
+            self.state = 4  # S_EXPIRED
+            return(4)  # S_EXPIRED
 
         else:
             # check with datafeed
-            args = array(2)
-            args[0] = "getreceivedbyaddress"
-            args[1] = contract.storage[BTC_ADDRESS]
-
-            values = call(contract.storage[DATAFEED], args, 2, 2)
-            if values[0] >= contract.storage[BTC_AMOUNT]:
+            values = self.datafeed.getreceivedbyaddress(self.btc_address, as=cryptocoinwatch, outsz=2)
+            if values[0] >= self.btc_amount:
                 # completed, pay seller
-                send(contract.storage[SELLER], contract.balance)
-                contract.storage[STATE] = S_FINISHED
-                return(S_FINISHED)
+                send(self.seller, self.balance)
+                self.state = 3  # S_FINISHED
+                return(3)  # S_FINISHED
             else:
                 # still pending
-                return(S_PENDING)
-
+                return(2)  # S_PENDING
     return(0)
