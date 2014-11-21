@@ -118,7 +118,7 @@ def cmd_watch(args):
 
     print "Watching", hex_value
 
-    args.api.transact(args.contract_address, data=['watch', xint(hex_value)])
+    args.api.transact(args.contract_address, funid=3, data=[xint(hex_value)])
     if args.wait:
         args.api.wait_for_next_block(verbose=True)
 
