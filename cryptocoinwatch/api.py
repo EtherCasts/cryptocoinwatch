@@ -14,6 +14,8 @@ GAS_PRICE = 10 * 10 ** 12
 
 DEFAULT_KEY = '0x' + utils.sha3("cow").encode('hex')  # part of the Genesis block
 DEFAULT_ADDRESS = '0x' + utils.privtoaddr(DEFAULT_KEY[2:])  # cd2a3d9f938e13cd947ec05abc7fe734df8dd826
+# FIXME using cow address doesn't work
+DEFAULT_ADDRESS = '0x8928602aaee4d7cec275e0da580805f6949cfe98'
 
 
 class ApiException(Exception):
@@ -73,16 +75,18 @@ class Api(object):
     def coinbase(self):
         return self._rpc_post('eth_coinbase', None)
 
-    def create(self, code, secret=DEFAULT_KEY, gas=DEFAULT_GAS, gas_price=GAS_PRICE, endowment=0):
+    def create(self, code, from_=DEFAULT_ADDRESS, gas=DEFAULT_GAS, gas_price=GAS_PRICE, value=0):
         if not code.startswith('0x'):
             code = '0x' + code
-        params = {
-            'bCode': code,
-            'sec': secret,
-            'xEndowment': hex(endowment),
-            'xGas': hex(gas),
-            'xGasPrice': hex(gas_price)}
-        return self._rpc_post('create', params)
+        params = [{'code': code}]
+        # FIXME
+        # params = [{
+        #    'code': code,
+        #    'from': from_,
+        #    'gas': hex(gas),
+        #    'gasPrice': hex(gas_price),
+        #    'value': hex(value)}]
+        return self._rpc_post('eth_transact', params)
 
     def is_contract_at(self, address):
         params = {
