@@ -30,13 +30,19 @@ data state
 
 extern cryptocoinwatch = [getinfo, echo, suicide, watch, getaddress, getreceivedbyaddress, setreceivedbyaddress]
 
+def shared():
+    S_NEW = 1
+    S_PENDING = 2
+    S_FINISHED = 3
+    S_EXPIRED = 4
+
 def init():
     self.buyer = msg.sender
-    self.state = 1  # S_NEW
+    self.state = S_NEW
 
 # funid=0
 def new(seller, datafeed, btc_address, btc_amount, expiry):
-    if self.state == 1 and msg.sender == self.buyer:
+    if self.state == S_NEW and msg.sender == self.buyer:
         if seller == 0 or datafeed == 0 or btc_address == 0 or btc_amount == 0 or expiry == 0:
             # invalid arguments
             return(0)
@@ -52,18 +58,18 @@ def new(seller, datafeed, btc_address, btc_amount, expiry):
             self.btc_amount = btc_amount
             self.expiry = expiry
 
-            self.state = 2  # S_PENDING
-            return(2)  # S_PENDING
+            self.state = S_PENDING
+            return(S_PENDING)
     return(0)
 
 # funid=1
 def finish():
-    if self.state == 2 and msg.sender == self.buyer or msg.sender == self.seller:
+    if self.state == S_PENDING and msg.sender == self.buyer or msg.sender == self.seller:
         if self.expiry < block.timestamp:
             # expired, refund buyer
             send(self.buyer, self.balance)
-            self.state = 4  # S_EXPIRED
-            return(4)  # S_EXPIRED
+            self.state = S_EXPIRED
+            return(S_EXPIRED)
 
         else:
             # check with datafeed
@@ -71,9 +77,9 @@ def finish():
             if values[0] >= self.btc_amount:
                 # completed, pay seller
                 send(self.seller, self.balance)
-                self.state = 3  # S_FINISHED
-                return(3)  # S_FINISHED
+                self.state = S_FINISHED
+                return(S_FINISHED)
             else:
                 # still pending
-                return(2)  # S_PENDING
+                return(S_PENDING)
     return(0)

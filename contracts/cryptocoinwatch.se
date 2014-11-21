@@ -10,6 +10,9 @@ data watch_list[2^160]
 
 data addresses[2^168](recieved_by_address, last_updated, nr_watched, last_watched)
 
+def shared():
+    MAX_ADDRESS = 2 ^ 168
+
 def init():
     self.owner = msg.sender
     self.source = "blockchain.info"
@@ -32,7 +35,7 @@ def suicide():
 
 # funid=3
 def watch(address):
-    if address > 2 ^ 168:
+    if address > MAX_ADDRESS:
         return(0)
 
     nr_watched = self.addresses[address].nr_watched
@@ -54,21 +57,21 @@ def watch(address):
 
 # funid=4
 def getaddress(address):
-    if address > 2 ^ 168:
+    if address > MAX_ADDRESS:
         return(0)
 
     return([self.addresses[address].recieved_by_address, self.addresses[address].last_updated, self.addresses[address].nr_watched, self.addresses[address].last_watched], 4)
 
 # funid=5
 def getreceivedbyaddress(address):
-    if address > 2 ^ 168:
+    if address > MAX_ADDRESS:
         return(0)
 
     return([self.addresses[address].recieved_by_address, self.addresses[address].last_updated], 2)
 
 # funid=6
 def setreceivedbyaddress(address, value):
-    if address > 2 ^ 168:
+    if address > MAX_ADDRESS:
         return(0)
 
     if msg.sender == self.owner:
