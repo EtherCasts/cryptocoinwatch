@@ -143,6 +143,23 @@ class Api(object):
             'value': hex(value)}]
         return self._rpc_post('eth_transact', params)
 
+    def call(self, dest, from_=DEFAULT_ADDRESS, funid=None, data="", gas=DEFAULT_GAS, gas_price=GAS_PRICE, value=0):
+        if not dest.startswith('0x'):
+            dest = '0x' + dest
+
+        if funid is not None:
+            data = "0x" + serpent.encode_abi(funid, data).encode('hex')
+
+        params = [{
+            'to': dest,
+            'data': data,
+            'from': from_,
+            'gas': hex(gas),
+            'gasPrice': hex(gas_price),
+            'value': hex(value)}]
+        r = self._rpc_post('eth_call', params)
+        return serpent.decode_datalist(r[2:].decode('hex'))
+
     def wait_for_next_block(self, verbose=False):
         if verbose:
             sys.stdout.write('Waiting for next block to be mined')

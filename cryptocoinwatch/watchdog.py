@@ -30,18 +30,12 @@ def getreceivedbyaddress(address, confirmations=6):
     print "ERROR", r.status_code, r.text
 
 def get_address_record(api, contract, address):
-    address_idx = ADDRESS_OFFSET + address * ADDRESS_RECORD_SIZE
-
-    received_by_address = api.state_at(contract, xhex(address_idx))
-    last_updated = api.stage_at(contract, xhex(address_idx + 1))
-    nr_watched = api.state_at(contract, xhex(address_idx + 2))
-    last_watched = api.state_at(contract, xhex(address_idx + 3))
-
+    received_by_address, last_updated, nr_watched, last_watched = api.call(contract, funid=4, data=[address])
     return {
-        'received_by_address': xint(received_by_address),
-        'last_updated': xint(last_updated),
-        'nr_watched': xint(nr_watched),
-        'last_watched': xint(last_watched)}
+        'received_by_address': received_by_address,
+        'last_updated': last_updated,
+        'nr_watched': nr_watched,
+        'last_watched': last_watched}
 
 def cmd_create(args):
     contract = compile(open(CONTRACT_FILE).read()).encode('hex')
@@ -81,15 +75,12 @@ def update_address(api, contract_address, hex_value):
     address = hex_to_address(hex_value)
     record = get_address_record(api, contract_address, xint(hex_value))
 
-    print address, hex_value
-    pprint(record)
-
     epoch_time = int(time.time())
 
     if epoch_time - record['last_updated'] > UPDATE_INTERVAL:
         value = getreceivedbyaddress(address)
         print "VALUE", value
-        api.transact(contract_address, data=['setreceivedbyaddress', xint(hex_value), value])
+        api.transact(contract_address, funid=6, data=[xint(hex_value), value])
         print "updated"
     else:
         print "not updating, already recently updated"
@@ -110,7 +101,7 @@ def cmd_poll(args):
 
     if watch_list != '0x':
         for idx in range(int(watch_list, 16)):
-            hex_value = args.api.state_at(args.contract_address, xhex(0x20 + idx + 1))
+            hex_value = args.api.state_at(args.contract_address, xhex(0x04 + idx + 1))
             update_address(args.api, args.contract_address, hex_value)
 
 def cmd_watch(args):
