@@ -32,10 +32,10 @@ def getreceivedbyaddress(address, confirmations=6):
 def get_address_record(api, contract, address):
     address_idx = ADDRESS_OFFSET + address * ADDRESS_RECORD_SIZE
 
-    received_by_address = api.storage_at(contract, xhex(address_idx))
-    last_updated = api.storage_at(contract, xhex(address_idx + 1))
-    nr_watched = api.storage_at(contract, xhex(address_idx + 2))
-    last_watched = api.storage_at(contract, xhex(address_idx + 3))
+    received_by_address = api.state_at(contract, xhex(address_idx))
+    last_updated = api.stage_at(contract, xhex(address_idx + 1))
+    nr_watched = api.state_at(contract, xhex(address_idx + 2))
+    last_watched = api.state_at(contract, xhex(address_idx + 3))
 
     return {
         'received_by_address': xint(received_by_address),
@@ -99,18 +99,18 @@ def cmd_poll(args):
         print "No contract found at %s" % args.contract_address
         return
 
-    owner = args.api.storage_at(args.contract_address, "0x10")
+    owner = args.api.state_at(args.contract_address, "0x")
     print "OWNER", owner
     if owner != api.DEFAULT_ADDRESS:
         print "You are not the owner of the contract"
         return
 
-    watch_list = args.api.storage_at(args.contract_address, "0x20")
+    watch_list = args.api.state_at(args.contract_address, "0x04")
     print "WATCH_LIST", watch_list
 
     if watch_list != '0x':
         for idx in range(int(watch_list, 16)):
-            hex_value = args.api.storage_at(args.contract_address, xhex(0x20 + idx + 1))
+            hex_value = args.api.state_at(args.contract_address, xhex(0x20 + idx + 1))
             update_address(args.api, args.contract_address, hex_value)
 
 def cmd_watch(args):

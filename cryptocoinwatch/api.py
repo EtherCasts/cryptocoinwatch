@@ -89,10 +89,8 @@ class Api(object):
         return self._rpc_post('eth_transact', params)
 
     def is_contract_at(self, address):
-        params = {
-            'a': address
-        }
-        return self._rpc_post('isContractAt', params)
+        params = [address]
+        return int(self._rpc_post('eth_codeAt', params), 16) != 0
 
     def is_listening(self):
         return self._rpc_post('eth_listening', None)
@@ -121,11 +119,13 @@ class Api(object):
     def peer_count(self):
         return self._rpc_post('eth_peerCount', None)
 
-    def storage_at(self, address, index):
-        params = {
-            'a': address,
-            'x': index}
-        return self._rpc_post('storageAt', params)
+    def state_at(self, address, index):
+        params = [address, index]
+        return self._rpc_post('eth_stateAt', params)
+
+    def storage_at(self, address):
+        params = [address]
+        return self._rpc_post('eth_storageAt', params)
 
     def transact(self, dest, from_=DEFAULT_ADDRESS, data="", gas=DEFAULT_GAS, gas_price=GAS_PRICE, value=0):
         if not dest.startswith('0x'):
