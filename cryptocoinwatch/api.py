@@ -137,7 +137,6 @@ class Api(object):
         params = [{
             'to': dest,
             'data': data,
-            'from': from_,
             'gas': hex(gas),
             'gasPrice': hex(gas_price),
             'value': hex(value)}]

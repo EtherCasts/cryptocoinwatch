@@ -30,7 +30,8 @@ def getreceivedbyaddress(address, confirmations=6):
     print "ERROR", r.status_code, r.text
 
 def get_address_record(api, contract, address):
-    received_by_address, last_updated, nr_watched, last_watched = api.call(contract, funid=4, data=[address])
+    res = api.call(contract, funid=4, data=[address])
+    received_by_address, last_updated, nr_watched, last_watched = res
     return {
         'received_by_address': received_by_address,
         'last_updated': last_updated,
@@ -86,13 +87,18 @@ def update_address(api, contract_address, hex_value):
         print "not updating, already recently updated"
 
 def cmd_poll(args):
+    coinbase = args.api.coinbase()
+    if not coinbase:
+        print "No coinbase found"
+        return
+
     if not args.api.is_contract_at(args.contract_address):
         print "No contract found at %s" % args.contract_address
         return
 
     owner = args.api.state_at(args.contract_address, "0x")
     print "OWNER", owner
-    if owner != api.DEFAULT_ADDRESS:
+    if owner != coinbase:
         print "You are not the owner of the contract"
         return
 
