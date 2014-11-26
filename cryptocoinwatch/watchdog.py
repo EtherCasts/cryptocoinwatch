@@ -74,8 +74,9 @@ def cmd_transact(args):
 
 def update_address(api, contract_address, hex_value):
     address = hex_to_address(hex_value)
-    record = get_address_record(api, contract_address, xint(hex_value))
+    print "ADDRESS", address
 
+    record = get_address_record(api, contract_address, xint(hex_value))
     epoch_time = int(time.time())
 
     if epoch_time - record['last_updated'] > UPDATE_INTERVAL:
