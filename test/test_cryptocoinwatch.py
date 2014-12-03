@@ -23,6 +23,7 @@ pblogger.log_stack = False        # generate machine readable output
 
 class TestCryptoCoinWatch(object):
     ADDRESS = int(address_to_hex("36PrZ1KHYMpqSyAQXSG8VwbUiq2EogxLo2"), 16)
+    BLOCKCHAININFO = '0x626c6f636b636861696e2e696e666f0000000000000000000000000000000000'
 
     CONTRACT = 'contracts/cryptocoinwatch.se'
 
@@ -43,11 +44,11 @@ class TestCryptoCoinWatch(object):
 
     def test_init(self):
         assert self._storage('0x') == '0x' + tester.a0
-        assert self._storage('0x01') == '0x' + 'blockchain.info'.encode('hex')
+        assert self._storage('0x01') == self.BLOCKCHAININFO
         assert self._storage('0x02') == '0x06'
 
         o1 = self.s.send(tester.k0, self.c, 0, funid=self.FUN_GETINFO, abi=[])
-        assert o1 == [int('0x' + tester.a0, 16), int('0x' + 'blockchain.info'.encode('hex'), 16), 6, self.s.block.timestamp]
+        assert o1 == [int('0x' + tester.a0, 16), int(self.BLOCKCHAININFO, 16), 6, self.s.block.timestamp]
 
     def test_echo(self):
         assert [42] == self.s.send(tester.k0, self.c, 0, funid=self.FUN_ECHO, abi=[42])
