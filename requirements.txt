@@ -1,4 +1,4 @@
-ethereum-serpent==1.7.6
+ethereum-serpent==1.7.7
 flake8==2.2.5
 bitcoin==1.1.23
 -e ../pyethereum
