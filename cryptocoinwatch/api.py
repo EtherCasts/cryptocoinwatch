@@ -127,12 +127,13 @@ class Api(object):
         params = [address]
         return self._rpc_post('eth_storageAt', params)
 
-    def transact(self, dest, from_=DEFAULT_ADDRESS, funid=None, data="", gas=DEFAULT_GAS, gas_price=GAS_PRICE, value=0):
+    def transact(self, dest, from_=DEFAULT_ADDRESS, funid=None, data=None, gas=DEFAULT_GAS, gas_price=GAS_PRICE, value=0):
+
         if not dest.startswith('0x'):
             dest = '0x' + dest
 
         if funid is not None:
-            data = "0x" + serpent.encode_abi(funid, data).encode('hex')
+            data = "0x" + serpent.encode_abi(funid, *data).encode('hex')
 
         params = [{
             'to': dest,
@@ -142,12 +143,12 @@ class Api(object):
             'value': hex(value)}]
         return self._rpc_post('eth_transact', params)
 
-    def call(self, dest, from_=DEFAULT_ADDRESS, funid=None, data="", gas=DEFAULT_GAS, gas_price=GAS_PRICE, value=0):
+    def call(self, dest, from_=DEFAULT_ADDRESS, funid=None, data=None, gas=DEFAULT_GAS, gas_price=GAS_PRICE, value=0):
         if not dest.startswith('0x'):
             dest = '0x' + dest
 
         if funid is not None:
-            data = "0x" + serpent.encode_abi(funid, data).encode('hex')
+            data = "0x" + serpent.encode_abi(funid, *data).encode('hex')
 
         params = [{
             'to': dest,
