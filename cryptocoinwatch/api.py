@@ -128,7 +128,6 @@ class Api(object):
         return self._rpc_post('eth_storageAt', params)
 
     def transact(self, dest, from_=DEFAULT_ADDRESS, funid=None, data=None, gas=DEFAULT_GAS, gas_price=GAS_PRICE, value=0):
-
         if not dest.startswith('0x'):
             dest = '0x' + dest
 
@@ -153,7 +152,6 @@ class Api(object):
         params = [{
             'to': dest,
             'data': data,
-            'from': from_,
             'gas': hex(gas),
             'gasPrice': hex(gas_price),
             'value': hex(value)}]
